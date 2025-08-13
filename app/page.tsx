@@ -98,6 +98,7 @@ export default function DopeTechEcommerce() {
     removeFromCart, 
     getCartCount, 
     getCartTotal, 
+    clearCart,
     cartOpen, 
     setCartOpen,
     checkoutModalOpen,
@@ -177,34 +178,21 @@ export default function DopeTechEcommerce() {
     }) as T
   }
 
-  // Optimized product fetching with better error handling
+  // Simplified product fetching with proper error handling
   useEffect(() => {
     let isMounted = true
-    let fallbackTimeout: NodeJS.Timeout | null = null
 
     const fetchProducts = async () => {
       try {
-        startTransition(() => {
-          setIsLoading(true)
-        })
+        setIsLoading(true)
+        console.log('🔄 Fetching products...')
         
-        // Add timeout to prevent infinite loading
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Request timeout')), 5000)
-        })
-        
-        const productsPromise = getProducts()
-        const fetchedProducts = await Promise.race([productsPromise, timeoutPromise]) as Product[]
+        const fetchedProducts = await getProducts()
         
         if (isMounted) {
-          setProducts(fetchedProducts || [])
+          console.log('✅ Products loaded:', fetchedProducts.length)
+          setProducts(fetchedProducts)
           setIsLoading(false)
-          
-          // Clear the fallback timeout since we successfully fetched products
-          if (fallbackTimeout) {
-            clearTimeout(fallbackTimeout)
-            fallbackTimeout = null
-          }
         }
       } catch (error) {
         if (isMounted) {
@@ -215,34 +203,10 @@ export default function DopeTechEcommerce() {
       }
     }
 
-    // Add a fallback timeout to ensure loading state is always cleared
-    fallbackTimeout = setTimeout(() => {
-      if (isMounted) {
-        setIsLoading(false)
-        // Try to load local data as last resort
-        if (products.length === 0) {
-          import('@/lib/products-data').then(({ getProducts }) => {
-            if (isMounted) {
-              getProducts().then(localProducts => {
-                if (isMounted) {
-                  setProducts(localProducts)
-                }
-              }).catch(() => {
-                // Silent fail for fallback
-              })
-            }
-          })
-        }
-      }
-    }, 8000) // 8 second fallback
-
     fetchProducts()
 
     return () => {
       isMounted = false
-      if (fallbackTimeout) {
-        clearTimeout(fallbackTimeout)
-      }
     }
   }, [])
 
@@ -639,7 +603,7 @@ export default function DopeTechEcommerce() {
   }
 
   const handleCartReset = () => {
-    setCart([])
+    // Reset cart and close checkout modal
     setCheckoutModalOpen(false)
   }
 
@@ -1899,7 +1863,7 @@ export default function DopeTechEcommerce() {
                     {cart.map((item) => (
                       <div key={item.id} className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-gray-50 dark:bg-[#2a2a2a] rounded-lg">
                         <img
-                          src={item.image}
+                          src={item.image_url}
                           alt={item.name}
                           className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg flex-shrink-0"
                         />
