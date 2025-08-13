@@ -17,7 +17,7 @@ export interface Product {
   hidden_on_home?: boolean;
 }
 
-// Sample products for fallback when Supabase is not available
+// Sample products for immediate loading
 const sampleProducts: Product[] = [
   {
     id: 1,
@@ -111,108 +111,21 @@ const sampleProducts: Product[] = [
   }
 ];
 
-// Check if we're in a production environment (Netlify, Vercel, etc.)
-const isProduction = () => {
-  if (typeof window === 'undefined') return false; // Server-side
-  return window.location.hostname !== 'localhost' && 
-         window.location.hostname !== '127.0.0.1' &&
-         !window.location.hostname.includes('localhost');
-};
-
-// Fetch products with smart fallback strategy
+// Always return sample products immediately for fast loading
 export async function getProducts(): Promise<Product[]> {
-  // For production (Netlify), use sample products to ensure static assets work
-  if (isProduction()) {
-    console.log('🌐 Production environment detected, using sample products for static assets compatibility...');
-    return sampleProducts;
-  }
-
-  // For local development, try Supabase first
-  try {
-    console.log('🔗 Connecting to Supabase...')
-    
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('hidden_on_home', false)
-      .order('id', { ascending: true });
-
-    if (error) {
-      console.error('❌ Supabase error:', error);
-      throw error;
-    }
-
-    console.log('✅ Supabase query successful')
-    console.log('📦 Data received:', data?.length || 0, 'products')
-    
-    if (data && data.length > 0) {
-      return data;
-    } else {
-      console.log('⚠️ No data from Supabase, using sample products')
-      return sampleProducts;
-    }
-  } catch (error) {
-    console.error('❌ Error fetching products from Supabase:', error);
-    console.log('🔄 Falling back to sample products...')
-    return sampleProducts;
-  }
+  // For now, always return sample products to ensure fast loading
+  console.log('🚀 Using sample products for immediate loading...');
+  return sampleProducts;
 }
 
 // Fetch a single product by ID
 export async function getProductById(id: number): Promise<Product | null> {
-  // For production, use sample products
-  if (isProduction()) {
-    return sampleProducts.find(p => p.id === id) || null;
-  }
-
-  try {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error) {
-      console.error('Error fetching product:', error);
-      return sampleProducts.find(p => p.id === id) || null;
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error fetching product:', error);
-    return sampleProducts.find(p => p.id === id) || null;
-  }
+  return sampleProducts.find(p => p.id === id) || null;
 }
 
 // Get products by category
 export async function getProductsByCategory(category: string): Promise<Product[]> {
-  // For production, use sample products
-  if (isProduction()) {
-    return sampleProducts.filter(p => p.category === category);
-  }
-
-  try {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('category', category)
-      .eq('hidden_on_home', false)
-      .order('id', { ascending: true });
-
-    if (error) {
-      console.error('Error fetching products by category:', error);
-      return sampleProducts.filter(p => p.category === category);
-    }
-
-    if (data && data.length > 0) {
-      return data;
-    } else {
-      return sampleProducts.filter(p => p.category === category);
-    }
-  } catch (error) {
-    console.error('Error fetching products by category:', error);
-    return sampleProducts.filter(p => p.category === category);
-  }
+  return sampleProducts.filter(p => p.category === category);
 }
 
  

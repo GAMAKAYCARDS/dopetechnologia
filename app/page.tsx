@@ -178,7 +178,7 @@ export default function DopeTechEcommerce() {
     }) as T
   }
 
-  // Simplified product fetching with proper error handling
+  // Simplified product fetching with immediate loading
   useEffect(() => {
     let isMounted = true
 
@@ -187,6 +187,7 @@ export default function DopeTechEcommerce() {
         setIsLoading(true)
         console.log('🔄 Fetching products...')
         
+        // Use sample products immediately for faster loading
         const fetchedProducts = await getProducts()
         
         if (isMounted) {
@@ -197,16 +198,27 @@ export default function DopeTechEcommerce() {
       } catch (error) {
         if (isMounted) {
           console.error('❌ Error fetching products:', error)
-          setProducts([])
+          // Always set sample products as fallback
+          setProducts(sampleProducts)
           setIsLoading(false)
         }
       }
     }
 
+    // Add a timeout to ensure loading state is always cleared
+    const timeoutId = setTimeout(() => {
+      if (isMounted) {
+        console.log('⏰ Loading timeout, using sample products')
+        setProducts(sampleProducts)
+        setIsLoading(false)
+      }
+    }, 3000) // 3 second timeout
+
     fetchProducts()
 
     return () => {
       isMounted = false
+      clearTimeout(timeoutId)
     }
   }, [])
 
