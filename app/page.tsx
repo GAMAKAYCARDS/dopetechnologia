@@ -185,20 +185,23 @@ export default function DopeTechEcommerce() {
     const fetchProducts = async () => {
       try {
         setIsLoading(true)
-        console.log('🔄 Fetching products...')
+        console.log('🔄 Starting to fetch products...')
         
-        // Use sample products immediately for faster loading
+        // Fetch products from Supabase
         const fetchedProducts = await getProducts()
         
         if (isMounted) {
-          console.log('✅ Products loaded:', fetchedProducts.length)
+          console.log('✅ Products loaded successfully!')
+          console.log('📦 Number of products:', fetchedProducts.length)
+          console.log('🏷️ First product:', fetchedProducts[0]?.name)
+          console.log('🖼️ First product image:', fetchedProducts[0]?.image_url)
           setProducts(fetchedProducts)
           setIsLoading(false)
         }
       } catch (error) {
         if (isMounted) {
           console.error('❌ Error fetching products:', error)
-          // Always set sample products as fallback
+          console.log('🔄 Falling back to sample products...')
           setProducts(sampleProducts)
           setIsLoading(false)
         }
@@ -208,11 +211,11 @@ export default function DopeTechEcommerce() {
     // Add a timeout to ensure loading state is always cleared
     const timeoutId = setTimeout(() => {
       if (isMounted) {
-        console.log('⏰ Loading timeout, using sample products')
+        console.log('⏰ Loading timeout reached, using sample products')
         setProducts(sampleProducts)
         setIsLoading(false)
       }
-    }, 3000) // 3 second timeout
+    }, 5000) // 5 second timeout to allow Supabase to respond
 
     fetchProducts()
 
