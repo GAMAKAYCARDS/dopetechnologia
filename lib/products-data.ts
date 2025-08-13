@@ -17,7 +17,7 @@ export interface Product {
   hidden_on_home?: boolean;
 }
 
-// Sample products for immediate loading
+// Sample products for fallback when Supabase is not available
 const sampleProducts: Product[] = [
   {
     id: 1,
@@ -111,21 +111,84 @@ const sampleProducts: Product[] = [
   }
 ];
 
-// Always return sample products immediately for fast loading
+// Fetch products from Supabase with proper fallback
 export async function getProducts(): Promise<Product[]> {
-  // For now, always return sample products to ensure fast loading
-  console.log('🚀 Using sample products for immediate loading...');
-  return sampleProducts;
+  try {
+    console.log('🔗 Connecting to Supabase to fetch your real data...')
+    
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('hidden_on_home', false)
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.error('❌ Supabase error:', error);
+      throw error;
+    }
+
+    console.log('✅ Supabase query successful')
+    console.log('📦 Your real data received:', data?.length || 0, 'products')
+    
+    if (data && data.length > 0) {
+      console.log('🎉 Using your real Supabase data!')
+      return data;
+    } else {
+      console.log('⚠️ No data from Supabase, using sample products')
+      return sampleProducts;
+    }
+  } catch (error) {
+    console.error('❌ Error fetching products from Supabase:', error);
+    console.log('🔄 Falling back to sample products...')
+    return sampleProducts;
+  }
 }
 
 // Fetch a single product by ID
 export async function getProductById(id: number): Promise<Product | null> {
-  return sampleProducts.find(p => p.id === id) || null;
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      console.error('Error fetching product:', error);
+      return sampleProducts.find(p => p.id === id) || null;
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    return sampleProducts.find(p => p.id === id) || null;
+  }
 }
 
 // Get products by category
 export async function getProductsByCategory(category: string): Promise<Product[]> {
-  return sampleProducts.filter(p => p.category === category);
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('category', category)
+      .eq('hidden_on_home', false)
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching products by category:', error);
+      return sampleProducts.filter(p => p.category === category);
+    }
+
+    if (data && data.length > 0) {
+      return data;
+    } else {
+      return sampleProducts.filter(p => p.category === category);
+    }
+  } catch (error) {
+    console.error('Error fetching products by category:', error);
+    return sampleProducts.filter(p => p.category === category);
+  }
 }
 
  
