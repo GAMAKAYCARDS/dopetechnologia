@@ -19,6 +19,19 @@ export interface Product {
 
 // Fetch products from Supabase with local fallback
 export async function getProducts(): Promise<Product[]> {
+  // For static export, prioritize local data
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+    console.log('🌐 Static export detected, using local products data...')
+    try {
+      const localProducts = await import('../processed-products.json')
+      console.log('✅ Local data loaded:', localProducts.default?.length || 0, 'products')
+      return localProducts.default || []
+    } catch (localError) {
+      console.error('❌ Local data failed:', localError)
+      return []
+    }
+  }
+
   try {
     console.log('🔗 Connecting to Supabase...')
     
