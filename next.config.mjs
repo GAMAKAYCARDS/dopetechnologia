@@ -1,17 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: true,
-  output: 'export', // Enable static export
-  distDir: 'out', // Output directory for static files
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
-  },
-  // Ensure admin page is generated during build
-  generateBuildId: async () => {
-    return 'build-' + Date.now()
   },
   images: {
     formats: ['image/webp', 'image/avif'],
@@ -21,22 +15,7 @@ const nextConfig = {
     unoptimized: true,
     loader: 'default',
     path: '',
-  },
-  // Ensure all routes are pre-rendered
-  experimental: {
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-    optimizeCss: true,
-    // Ensure all pages are statically generated
-    workerThreads: false,
-    cpus: 1,
-    turbo: {
-      rules: {
-        '*.svg': {
-          loaders: ['@svgr/webpack'],
-          as: '*.js',
-        },
-      },
-    },
+    domains: ['images.unsplash.com', 'aizgswoelfdkhyosgvzu.supabase.co'],
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
@@ -52,17 +31,6 @@ const nextConfig = {
   reactStrictMode: true,
   // Asset optimization
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
-  // Bundle analyzer
-  ...(process.env.ANALYZE === 'true' && {
-    webpack: (config) => {
-      config.plugins.push(
-        new (require('@next/bundle-analyzer'))({
-          enabled: true,
-        })
-      )
-      return config
-    },
-  }),
   webpack: (config, { dev, isServer }) => {
     // Optimize bundle size
     if (!dev && !isServer) {
@@ -97,7 +65,6 @@ const nextConfig = {
     
     return config;
   },
-
 }
 
 export default nextConfig

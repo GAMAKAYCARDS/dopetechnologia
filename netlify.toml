@@ -1,6 +1,6 @@
 [build]
   command = "npm run build"
-  publish = "out"
+  publish = ".next"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
@@ -49,10 +49,4 @@
   for = "*.svg"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
-    Content-Type = "image/svg+xml"
-
-# Redirects for SPA
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200 
+    Content-Type = "image/svg+xml" 

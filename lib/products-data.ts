@@ -111,22 +111,23 @@ const sampleProducts: Product[] = [
   }
 ];
 
-// Check if we're in a static deployment environment
-const isStaticDeployment = () => {
+// Check if we're in a production environment (Netlify, Vercel, etc.)
+const isProduction = () => {
   if (typeof window === 'undefined') return false; // Server-side
   return window.location.hostname !== 'localhost' && 
          window.location.hostname !== '127.0.0.1' &&
          !window.location.hostname.includes('localhost');
 };
 
-// Fetch products from Supabase with proper fallback for static deployment
+// Fetch products with smart fallback strategy
 export async function getProducts(): Promise<Product[]> {
-  // For static deployment, prioritize sample products to avoid CORS issues
-  if (isStaticDeployment()) {
-    console.log('🌐 Static deployment detected, using sample products...');
+  // For production (Netlify), use sample products to ensure static assets work
+  if (isProduction()) {
+    console.log('🌐 Production environment detected, using sample products for static assets compatibility...');
     return sampleProducts;
   }
 
+  // For local development, try Supabase first
   try {
     console.log('🔗 Connecting to Supabase...')
     
@@ -138,7 +139,7 @@ export async function getProducts(): Promise<Product[]> {
 
     if (error) {
       console.error('❌ Supabase error:', error);
-      throw error; // Throw error to trigger fallback
+      throw error;
     }
 
     console.log('✅ Supabase query successful')
@@ -159,8 +160,8 @@ export async function getProducts(): Promise<Product[]> {
 
 // Fetch a single product by ID
 export async function getProductById(id: number): Promise<Product | null> {
-  // For static deployment, use sample products
-  if (isStaticDeployment()) {
+  // For production, use sample products
+  if (isProduction()) {
     return sampleProducts.find(p => p.id === id) || null;
   }
 
@@ -173,22 +174,20 @@ export async function getProductById(id: number): Promise<Product | null> {
 
     if (error) {
       console.error('Error fetching product:', error);
-      // Fallback to sample products
       return sampleProducts.find(p => p.id === id) || null;
     }
 
     return data;
   } catch (error) {
     console.error('Error fetching product:', error);
-    // Fallback to sample products
     return sampleProducts.find(p => p.id === id) || null;
   }
 }
 
 // Get products by category
 export async function getProductsByCategory(category: string): Promise<Product[]> {
-  // For static deployment, use sample products
-  if (isStaticDeployment()) {
+  // For production, use sample products
+  if (isProduction()) {
     return sampleProducts.filter(p => p.category === category);
   }
 
@@ -202,19 +201,16 @@ export async function getProductsByCategory(category: string): Promise<Product[]
 
     if (error) {
       console.error('Error fetching products by category:', error);
-      // Fallback to sample products
       return sampleProducts.filter(p => p.category === category);
     }
 
     if (data && data.length > 0) {
       return data;
     } else {
-      // Fallback to sample products
       return sampleProducts.filter(p => p.category === category);
     }
   } catch (error) {
     console.error('Error fetching products by category:', error);
-    // Fallback to sample products
     return sampleProducts.filter(p => p.category === category);
   }
 }
