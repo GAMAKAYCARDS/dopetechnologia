@@ -215,7 +215,7 @@ export default function DopeTechEcommerce() {
         setProducts(sampleProducts)
         setIsLoading(false)
       }
-    }, 5000) // 5 second timeout to allow Supabase to respond
+    }, 2000) // 2 second timeout for faster loading on Netlify
 
     fetchProducts()
 

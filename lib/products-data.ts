@@ -111,8 +111,21 @@ const sampleProducts: Product[] = [
   }
 ];
 
+// Check if we're on Netlify
+const isNetlify = () => {
+  if (typeof window === 'undefined') return false;
+  return window.location.hostname.includes('netlify.app') || 
+         window.location.hostname.includes('dopetechnepal.netlify');
+};
+
 // Fetch products from Supabase with proper fallback
 export async function getProducts(): Promise<Product[]> {
+  // On Netlify, always use sample products to ensure the site loads
+  if (isNetlify()) {
+    console.log('🌐 Netlify detected, using sample products for guaranteed loading...');
+    return sampleProducts;
+  }
+
   try {
     console.log('🔗 Connecting to Supabase to fetch your real data...')
     
@@ -146,6 +159,11 @@ export async function getProducts(): Promise<Product[]> {
 
 // Fetch a single product by ID
 export async function getProductById(id: number): Promise<Product | null> {
+  // On Netlify, use sample products
+  if (isNetlify()) {
+    return sampleProducts.find(p => p.id === id) || null;
+  }
+
   try {
     const { data, error } = await supabase
       .from('products')
@@ -167,6 +185,11 @@ export async function getProductById(id: number): Promise<Product | null> {
 
 // Get products by category
 export async function getProductsByCategory(category: string): Promise<Product[]> {
+  // On Netlify, use sample products
+  if (isNetlify()) {
+    return sampleProducts.filter(p => p.category === category);
+  }
+
   try {
     const { data, error } = await supabase
       .from('products')
