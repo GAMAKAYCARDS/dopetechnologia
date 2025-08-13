@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: true,
+  output: 'export', // Enable static export
+  distDir: 'out', // Output directory for static files
   eslint: {
     ignoreDuringBuilds: true,
   },

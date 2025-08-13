@@ -111,8 +111,22 @@ const sampleProducts: Product[] = [
   }
 ];
 
-// Fetch products from Supabase with proper fallback
+// Check if we're in a static deployment environment
+const isStaticDeployment = () => {
+  if (typeof window === 'undefined') return false; // Server-side
+  return window.location.hostname !== 'localhost' && 
+         window.location.hostname !== '127.0.0.1' &&
+         !window.location.hostname.includes('localhost');
+};
+
+// Fetch products from Supabase with proper fallback for static deployment
 export async function getProducts(): Promise<Product[]> {
+  // For static deployment, prioritize sample products to avoid CORS issues
+  if (isStaticDeployment()) {
+    console.log('🌐 Static deployment detected, using sample products...');
+    return sampleProducts;
+  }
+
   try {
     console.log('🔗 Connecting to Supabase...')
     
@@ -145,6 +159,11 @@ export async function getProducts(): Promise<Product[]> {
 
 // Fetch a single product by ID
 export async function getProductById(id: number): Promise<Product | null> {
+  // For static deployment, use sample products
+  if (isStaticDeployment()) {
+    return sampleProducts.find(p => p.id === id) || null;
+  }
+
   try {
     const { data, error } = await supabase
       .from('products')
@@ -168,6 +187,11 @@ export async function getProductById(id: number): Promise<Product | null> {
 
 // Get products by category
 export async function getProductsByCategory(category: string): Promise<Product[]> {
+  // For static deployment, use sample products
+  if (isStaticDeployment()) {
+    return sampleProducts.filter(p => p.category === category);
+  }
+
   try {
     const { data, error } = await supabase
       .from('products')
