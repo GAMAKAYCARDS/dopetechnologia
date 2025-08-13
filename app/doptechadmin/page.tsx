@@ -86,35 +86,15 @@ export default function DopeTechAdmin() {
     }
   }, [])
 
-  // Load products from Supabase or local fallback
+  // Load products from Supabase
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        console.log('🔄 Loading products for admin panel...')
         const supabaseProducts = await getProducts()
-        console.log('✅ Products loaded:', supabaseProducts.length)
         setProducts(supabaseProducts as AdminProduct[])
       } catch (error) {
-        console.error('❌ Error loading products:', error)
-        console.log('🔄 Using fallback products...')
-        // Fallback products for development
-        const fallbackProducts = [
-          {
-            id: 1,
-            name: "Sample Keyboard",
-            price: 999,
-            original_price: 1299,
-            image_url: "/products/keyboard.png",
-            category: "keyboard",
-            rating: 4.5,
-            reviews: 10,
-            description: "Sample keyboard for development",
-            features: ["Mechanical switches", "RGB lighting"],
-            in_stock: true,
-            discount: 23
-          }
-        ]
-        setProducts(fallbackProducts as AdminProduct[])
+        console.error('Error loading products:', error)
+        setProducts([])
       } finally {
         setIsLoading(false)
       }
@@ -266,18 +246,11 @@ export default function DopeTechAdmin() {
   }
 
   const handleLogin = () => {
-    console.log('🔐 Attempting admin login...')
     if (password === "dopetech2024") {
-      console.log('✅ Admin login successful')
       setIsAuthenticated(true)
-      try {
-        localStorage.setItem("adminAuthenticated", "true")
-        localStorage.setItem("adminLoginTime", new Date().toISOString())
-      } catch (error) {
-        console.error('❌ Error saving to localStorage:', error)
-      }
+      localStorage.setItem("adminAuthenticated", "true")
+      localStorage.setItem("adminLoginTime", new Date().toISOString())
     } else {
-      console.log('❌ Incorrect password')
       alert("Incorrect password!")
     }
   }
@@ -311,7 +284,6 @@ export default function DopeTechAdmin() {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-[#F7DD0F] mb-2">DopeTech Admin</h1>
             <p className="text-gray-400">Enter password to access admin panel</p>
-            <p className="text-xs text-gray-500 mt-2">Password: dopetech2024</p>
           </div>
           
           <div className="space-y-4">
@@ -333,12 +305,6 @@ export default function DopeTechAdmin() {
             >
               Login
             </button>
-            
-            <div className="text-center">
-              <p className="text-xs text-gray-500">
-                Development Mode: Using fallback data if Supabase unavailable
-              </p>
-            </div>
           </div>
         </div>
       </div>

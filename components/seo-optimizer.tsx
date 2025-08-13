@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
+import Head from "next/head"
 
 interface SEOOptimizerProps {
   title?: string
@@ -52,7 +53,48 @@ export default function SEOOptimizer({
     }
   }, [title, description, keywords, structuredData])
 
-  return null
+  return (
+    <Head>
+      {/* Basic Meta Tags */}
+      <title>{title}</title>
+      <meta name="description" content={description} />
+      <meta name="keywords" content={keywords} />
+      
+      {/* Open Graph */}
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:image" content={image} />
+      <meta property="og:url" content={url} />
+      <meta property="og:type" content={type} />
+      <meta property="og:site_name" content="DopeTech Nepal" />
+      
+      {/* Twitter Card */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={image} />
+      <meta name="twitter:creator" content="@dopetech_np" />
+      
+      {/* Additional SEO */}
+      <meta name="robots" content="index, follow" />
+      <meta name="author" content="DopeTech Nepal" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      
+      {/* Canonical URL */}
+      <link rel="canonical" href={url} />
+      
+      {/* Preconnect to external domains */}
+      <link rel="preconnect" href="https://fonts.googleapis.com" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      
+      {/* Preload critical resources */}
+      <link rel="preload" href={image} as="image" />
+      
+      {/* Favicon */}
+              <link rel="icon" href="/logo/dopelogo.svg" />
+        <link rel="apple-touch-icon" href="/logo/dopelogo.svg" />
+    </Head>
+  )
 }
 
 // Default structured data for the homepage

@@ -7,6 +7,10 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Ensure admin page is generated during build
+  generateBuildId: async () => {
+    return 'build-' + Date.now()
+  },
   images: {
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -15,7 +19,22 @@ const nextConfig = {
     unoptimized: true,
     loader: 'default',
     path: '',
-    domains: ['images.unsplash.com', 'aizgswoelfdkhyosgvzu.supabase.co'],
+  },
+  // Ensure all routes are pre-rendered
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    optimizeCss: true,
+    // Ensure all pages are statically generated
+    workerThreads: false,
+    cpus: 1,
+    turbo: {
+      rules: {
+        '*.svg': {
+          loaders: ['@svgr/webpack'],
+          as: '*.js',
+        },
+      },
+    },
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
@@ -31,6 +50,17 @@ const nextConfig = {
   reactStrictMode: true,
   // Asset optimization
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
+  // Bundle analyzer
+  ...(process.env.ANALYZE === 'true' && {
+    webpack: (config) => {
+      config.plugins.push(
+        new (require('@next/bundle-analyzer'))({
+          enabled: true,
+        })
+      )
+      return config
+    },
+  }),
   webpack: (config, { dev, isServer }) => {
     // Optimize bundle size
     if (!dev && !isServer) {
@@ -65,6 +95,7 @@ const nextConfig = {
     
     return config;
   },
+
 }
 
 export default nextConfig
