@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { Search, ShoppingBag, Menu, Instagram } from 'lucide-react'
 import { useState } from 'react'
 import { useLogoUrl } from "@/hooks/use-assets"
+import { HeroImageCarousel } from "@/components/hero-image-carousel"
 
 interface HeroSectionProps {
   cartCount: number
@@ -140,7 +141,13 @@ export default function HeroSection({ cartCount, onCartClick }: HeroSectionProps
         <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-8 md:mb-10 max-w-3xl mx-auto jakarta-light px-4 animate-fade-in-up stagger-3 leading-relaxed">
           Discover our premium collection of mechanical keyboards, gaming mice, wireless headphones, and more.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up stagger-4">
+        
+        {/* Hero Image Carousel */}
+        <div className="mb-8 md:mb-10 animate-fade-in-up stagger-4">
+          <HeroImageCarousel />
+        </div>
+        
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-in-up stagger-5">
           <button 
             className="w-full sm:w-auto bg-[#F7DD0F] text-black px-8 py-4 rounded-xl font-semibold text-lg hover:bg-[#F7DD0F]/90 transition-colors jakarta-light touch-manipulation premium-button hover-lift"
             style={{ minHeight: '56px' }}

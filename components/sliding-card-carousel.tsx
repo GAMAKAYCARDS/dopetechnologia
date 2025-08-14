@@ -1,0 +1,254 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+
+interface Slide {
+  id: number
+  image: string
+  header: string
+  description: string
+  link?: string
+}
+
+interface SlidingCardCarouselProps {
+  slides: Slide[]
+  autoPlayInterval?: number
+  className?: string
+}
+
+export function SlidingCardCarousel({ 
+  slides, 
+  autoPlayInterval = 5000,
+  className = ""
+}: SlidingCardCarouselProps) {
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (!isAutoPlaying || slides.length <= 1) return
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length)
+    }, autoPlayInterval)
+
+    return () => clearInterval(interval)
+  }, [isAutoPlaying, slides.length, autoPlayInterval])
+
+  // Pause auto-play on hover
+  const handleMouseEnter = () => setIsAutoPlaying(false)
+  const handleMouseLeave = () => setIsAutoPlaying(true)
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        goToPrevious()
+      } else if (e.key === 'ArrowRight') {
+        goToNext()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  // Touch/swipe support
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
+
+  const minSwipeDistance = 50
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+    
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+
+    if (isLeftSwipe) {
+      goToNext()
+    } else if (isRightSwipe) {
+      goToPrevious()
+    }
+  }
+
+  const goToNext = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length)
+  }
+
+  const goToPrevious = () => {
+    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length)
+  }
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index)
+  }
+
+  const handleSlideClick = () => {
+    const currentSlideData = slides[currentSlide]
+    if (currentSlideData.link) {
+      window.open(currentSlideData.link, '_blank')
+    }
+  }
+
+  if (!slides || slides.length === 0) {
+    return (
+      <div className={`flex items-center justify-center h-64 bg-gradient-to-br from-gray-900 to-black rounded-2xl ${className}`}>
+        <div className="text-center">
+          <p className="text-[#F7DD0F] font-semibold">No Hero Images Available</p>
+          <p className="text-gray-400 text-sm">Please upload some images in the admin panel</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+         <div 
+       className={`relative overflow-hidden rounded-2xl bg-gradient-to-br from-black via-gray-900 to-black shadow-2xl ${className} ${slides[currentSlide]?.link ? 'cursor-pointer' : ''}`}
+       onMouseEnter={handleMouseEnter}
+       onMouseLeave={handleMouseLeave}
+       onTouchStart={onTouchStart}
+       onTouchMove={onTouchMove}
+       onTouchEnd={onTouchEnd}
+       onClick={handleSlideClick}
+       role="region"
+       aria-label="Product showcase carousel"
+       tabIndex={0}
+     >
+      {/* Main Carousel Container */}
+      <div className="relative h-full min-h-[320px] sm:min-h-[400px] md:min-h-[480px]">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentSlide}
+            initial={{ opacity: 0, x: 300 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -300 }}
+            transition={{ 
+              duration: 0.8, 
+              ease: [0.25, 0.46, 0.45, 0.94],
+              staggerChildren: 0.1
+            }}
+            className="absolute inset-0"
+          >
+            {/* Background Image */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+              style={{ backgroundImage: `url(${slides[currentSlide].image})` }}
+            >
+              {/* Gradient Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+            </div>
+
+
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Navigation Arrows */}
+        {slides.length > 1 && (
+          <>
+            {/* Previous Button */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={goToPrevious}
+              className="absolute left-6 top-1/2 -translate-y-1/2 z-20 p-3 sm:p-4 bg-black/30 backdrop-blur-sm border border-white/20 rounded-full text-white hover:bg-black/50 hover:border-white/40 transition-all duration-300 group"
+              aria-label="Previous slide"
+            >
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6 group-hover:text-[#F7DD0F] transition-colors" />
+            </motion.button>
+
+            {/* Next Button */}
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={goToNext}
+              className="absolute right-6 top-1/2 -translate-y-1/2 z-20 p-3 sm:p-4 bg-black/30 backdrop-blur-sm border border-white/20 rounded-full text-white hover:bg-black/50 hover:border-white/40 transition-all duration-300 group"
+              aria-label="Next slide"
+            >
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:text-[#F7DD0F] transition-colors" />
+            </motion.button>
+          </>
+        )}
+
+        {/* Slide Indicators */}
+        {slides.length > 1 && (
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-4">
+            {slides.map((_, index) => (
+              <motion.button
+                key={index}
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => goToSlide(index)}
+                className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full transition-all duration-300 ${
+                  index === currentSlide 
+                    ? 'bg-[#F7DD0F] shadow-lg' 
+                    : 'bg-white/30 hover:bg-white/50'
+                }`}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Progress Bar */}
+        {slides.length > 1 && (
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30">
+            <motion.div
+              key={currentSlide}
+              initial={{ width: 0 }}
+              animate={{ width: '100%' }}
+              transition={{ 
+                duration: autoPlayInterval / 1000, 
+                ease: 'linear' 
+              }}
+              className="h-full bg-[#F7DD0F]"
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Default slides for demonstration
+export const defaultSlides: Slide[] = [
+  {
+    id: 1,
+    image: '/products/keyboard.png',
+    header: 'Premium Gaming Keyboards',
+    description: 'Experience ultimate precision and performance with our collection of high-end mechanical keyboards designed for gamers and professionals.',
+    link: '/product/1'
+  },
+  {
+    id: 2,
+    image: '/products/mouse.png',
+    header: 'Ergonomic Gaming Mice',
+    description: 'Dominate your games with precision-engineered mice featuring advanced sensors and customizable RGB lighting.',
+    link: '/product/2'
+  },
+  {
+    id: 3,
+    image: '/products/headphones.png',
+    header: 'Immersive Audio Experience',
+    description: 'Crystal clear sound and premium comfort with our selection of gaming headsets and professional audio equipment.',
+    link: '/product/3'
+  },
+  {
+    id: 4,
+    image: '/products/speaker.png',
+    header: 'Studio-Quality Speakers',
+    description: 'Transform your setup with powerful speakers that deliver rich, detailed sound for music, gaming, and entertainment.',
+    link: '/product/4'
+  }
+]

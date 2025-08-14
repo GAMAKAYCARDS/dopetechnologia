@@ -149,25 +149,25 @@ export default function OptimizedProductCard({
       {/* Content */}
       <div className="p-4 space-y-3">
         {/* Category (hidden on mobile) */}
-        <div className="hidden sm:flex items-center justify-between">
+        <div className="hidden sm:flex items-center justify-center">
           <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
             {product.category}
           </span>
         </div>
 
         {/* Product Name */}
-        <h3 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2">
+        <h3 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2 text-center">
           {product.name}
         </h3>
         {/* Description (hidden on mobile) */}
-        <p className="hidden sm:block text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+        <p className="hidden sm:block text-xs text-gray-500 dark:text-gray-400 line-clamp-2 text-center">
           {product.description}
         </p>
 
         {/* Price + Discount (mobile-friendly) */}
         <div>
-          <div className="flex items-start justify-between">
-            <div className="flex flex-col leading-tight">
+          <div className="flex items-start justify-center space-x-4">
+            <div className="flex flex-col leading-tight text-center">
               <span className="text-lg font-bold text-[#F7DD0F]">
                 Rs {product.price.toLocaleString()}
               </span>
@@ -177,7 +177,7 @@ export default function OptimizedProductCard({
                 </span>
               )}
             </div>
-            <div             className={`px-2 py-1 rounded-full text-[10px] font-medium ${
+            <div className={`px-2 py-1 rounded-full text-[10px] font-medium ${
               product.in_stock 
                 ? "bg-green-500/20 text-green-400 border border-green-500/30" 
                 : "bg-red-500/20 text-red-400 border border-red-500/30"
@@ -189,7 +189,7 @@ export default function OptimizedProductCard({
         </div>
 
         {/* Features (hidden on mobile) */}
-        <div className="hidden sm:flex flex-wrap gap-1">
+        <div className="hidden sm:flex flex-wrap gap-1 justify-center">
           {product.features.slice(0, 2).map((feature, index) => (
             <span
               key={index}

@@ -30,7 +30,7 @@ module.exports = {
         'slide-in-left': 'slide-in-left 0.6s ease-out',
         'slide-in-right': 'slide-in-right 0.6s ease-out',
         'slide-in-down': 'slide-in-down 0.45s ease-out both',
-        'marquee': 'marquee 15s linear infinite',
+        'marquee': 'marquee 20s linear infinite',
       },
       keyframes: {
         'fade-in': {

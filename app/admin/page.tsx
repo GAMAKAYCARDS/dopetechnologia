@@ -29,7 +29,9 @@ import {
 } from "lucide-react"
 import { getProducts, type Product } from "@/lib/products-data"
 import { useAssets } from '@/hooks/use-assets'
+import { useHeroImages } from '@/hooks/use-hero-images'
 import { AssetUploader } from '@/components/asset-uploader'
+import { HeroImageManager } from '@/components/hero-image-manager'
 import { supabase } from "@/lib/supabase"
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -86,6 +88,17 @@ export default function AdminPage() {
     refreshAssets 
   } = useAssets()
 
+  // Hero images state
+  const { 
+    heroImages, 
+    loading: heroImagesLoading, 
+    error: heroImagesError, 
+    uploadHeroImage, 
+    deleteHeroImage, 
+    refreshHeroImages 
+  } = useHeroImages()
+
+
   // Check for existing admin session
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -133,6 +146,8 @@ export default function AdminPage() {
       loadProducts()
     }
   }, [isAuthenticated])
+
+
 
   // Authentication handlers
   const handleLogin = () => {
@@ -185,6 +200,8 @@ export default function AdminPage() {
       setIsUploadingImage(false)
     }
   }
+
+
 
   const handleAddProduct = async () => {
     if (!newProduct.name || !newProduct.price) {
@@ -348,7 +365,16 @@ export default function AdminPage() {
               className="text-[#F7DD0F] border-[#F7DD0F]/30 hover:bg-[#F7DD0F]/10"
             >
               <RefreshCw className={`w-4 h-4 mr-2 ${assetsLoading ? 'animate-spin' : ''}`} />
-              Refresh
+              Refresh Assets
+            </Button>
+            <Button
+              onClick={refreshHeroImages}
+              disabled={heroImagesLoading}
+              variant="outline"
+              className="text-[#F7DD0F] border-[#F7DD0F]/30 hover:bg-[#F7DD0F]/10"
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${heroImagesLoading ? 'animate-spin' : ''}`} />
+              Refresh Hero Images
             </Button>
             <Button
               onClick={handleLogout}
@@ -367,10 +393,16 @@ export default function AdminPage() {
             <AlertDescription>{assetsError}</AlertDescription>
           </Alert>
         )}
+        
+        {heroImagesError && (
+          <Alert variant="destructive" className="mb-6 bg-red-900/20 border-red-500/30 text-red-300">
+            <AlertDescription>{heroImagesError}</AlertDescription>
+          </Alert>
+        )}
 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-black/50 border border-[#F7DD0F]/20">
+          <TabsList className="grid w-full grid-cols-4 bg-black/50 border border-[#F7DD0F]/20">
             <TabsTrigger 
               value="products" 
               className="flex items-center gap-2 text-gray-300 data-[state=active]:bg-[#F7DD0F] data-[state=active]:text-black"
@@ -384,6 +416,13 @@ export default function AdminPage() {
             >
               <FileImage className="w-4 h-4" />
               Assets
+            </TabsTrigger>
+            <TabsTrigger 
+              value="hero-images" 
+              className="flex items-center gap-2 text-gray-300 data-[state=active]:bg-[#F7DD0F] data-[state=active]:text-black"
+            >
+              <ImageIcon className="w-4 h-4" />
+              Hero Images
             </TabsTrigger>
             <TabsTrigger 
               value="overview" 
@@ -952,9 +991,14 @@ export default function AdminPage() {
             </div>
           </TabsContent>
 
+          {/* Hero Images Tab */}
+          <TabsContent value="hero-images" className="mt-6">
+            <HeroImageManager />
+          </TabsContent>
+
           {/* Overview Tab */}
           <TabsContent value="overview" className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
               <Card className="bg-black/50 border-[#F7DD0F]/20">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium text-white">Total Products</CardTitle>
@@ -974,6 +1018,17 @@ export default function AdminPage() {
                 <CardContent>
                   <div className="text-2xl font-bold text-[#F7DD0F]">{assets.length}</div>
                   <p className="text-xs text-gray-300">Logo, video, and image assets</p>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-black/50 border-[#F7DD0F]/20">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-white">Hero Images</CardTitle>
+                  <ImageIcon className="h-4 w-4 text-[#F7DD0F]" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-[#F7DD0F]">{heroImages.length}</div>
+                  <p className="text-xs text-gray-300">Hero section images</p>
                 </CardContent>
               </Card>
 

@@ -2,8 +2,11 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import { useLogoUrl, useVideoUrl } from "@/hooks/use-assets"
-import { useMarqueeControl } from "@/hooks/useMarqueeControl"
+
 import { useRouter } from "next/navigation"
+import { SlidingCardCarousel } from "@/components/sliding-card-carousel"
+import { useHeroCarousel } from "@/hooks/use-hero-carousel"
+import { PageTransition, useFluidNavigation, useScrollAnimation, useSmoothScroll } from "@/components/page-transition"
 import {
   Headphones,
   Keyboard,
@@ -39,6 +42,14 @@ export default function DopeTechEcommerce() {
   const { videoUrl, loading: videoLoading } = useVideoUrl()
   const [scrollY, setScrollY] = useState(0)
   const [products, setProducts] = useState<Product[]>([])
+  
+  // Fluid navigation hooks
+  const { navigateWithTransition, isNavigating } = useFluidNavigation()
+  const { scrollToElement, scrollToTop } = useSmoothScroll()
+  useScrollAnimation()
+  
+  // Hero carousel hook
+  const { slides: heroSlides, loading: heroLoading } = useHeroCarousel()
   
 
   
@@ -91,8 +102,7 @@ export default function DopeTechEcommerce() {
   const searchModalRef = useRef<HTMLDivElement>(null)
   const categorySectionRef = useRef<HTMLDivElement>(null)
   
-  // Marquee control hook
-  const marqueeControl = useMarqueeControl()
+
 
   // Optimized scroll handler with passive listener
   useEffect(() => {
@@ -328,7 +338,7 @@ export default function DopeTechEcommerce() {
     const interval = setInterval(() => {
       const container = document.querySelector('.flex.overflow-x-auto.scrollbar-hide') as HTMLElement;
       if (container && !container.classList.contains('user-interacting')) {
-        const productsToShow = products.filter((p: any) => !p.hidden_on_home).slice(0, 6);
+        const productsToShow = products.filter((p: any) => !p.hidden_on_home).slice(0, 5);
         if (productsToShow.length === 0) return
         
         const currentIndex = posterIndex;
@@ -350,24 +360,23 @@ export default function DopeTechEcommerce() {
     // Clear search when switching categories
     setSearchQuery("")
     
-    // Smooth scroll to products section with offset
+    // Fluid scroll to products section with enhanced animation
     setTimeout(() => {
       const productsSection = document.querySelector('[data-products-section]')
       if (productsSection) {
-        // Calculate the target scroll position with measured header height
         const header = document.querySelector('header.dopetech-nav') as HTMLElement | null
         const headerHeight = header ? header.offsetHeight + 12 : 72
         const rect = productsSection.getBoundingClientRect()
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop
         const targetPosition = scrollTop + rect.top - headerHeight
         
-        // Smooth scroll to the calculated position
+        // Enhanced smooth scroll with easing
         window.scrollTo({
           top: targetPosition,
           behavior: 'smooth'
         })
       }
-    }, 60)
+    }, 100)
   }
 
   const scrollToCategoryFilters = () => {
@@ -381,7 +390,7 @@ export default function DopeTechEcommerce() {
         const targetPosition = scrollTop + rect.top - headerHeight
         window.scrollTo({ top: targetPosition, behavior: 'smooth' })
       }
-    }, 0)
+    }, 50)
   }
 
   const handleAddToCartWithTracking = (product: Product) => {
@@ -682,8 +691,9 @@ export default function DopeTechEcommerce() {
   }, [showBackToCategories, categories])
 
   return (
-    <div className="text-white min-h-screen transition-colors duration-100 tap-feedback scrollbar-hide gradient-bg">
-      <SEOOptimizer structuredData={defaultStructuredData} />
+    <PageTransition>
+      <div className="text-white min-h-screen transition-colors duration-100 tap-feedback scrollbar-hide gradient-bg">
+        <SEOOptimizer structuredData={defaultStructuredData} />
       
       {/* Loading Overlay */}
       {isLoading && (
@@ -881,227 +891,27 @@ export default function DopeTechEcommerce() {
         </div>
       </header>
 
-      {/* Welcome Section - Mobile Optimized */}
-      <section className="safe-top pb-4 sm:pb-8 md:pb-12 relative mobile-hero" style={{ background: 'linear-gradient(135deg, #000000 0%, #1a1a0a 50%, #000000 100%)', paddingTop: headerOffset }}>
+             {/* Welcome Section - Mobile Optimized */}
+       <section className="safe-top pb-4 sm:pb-8 md:pb-12 relative mobile-hero section-fade-in" style={{ background: 'linear-gradient(135deg, #000000 0%, #1a1a0a 50%, #000000 100%)', paddingTop: headerOffset }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Page Header */}
           <div className="text-center mb-4 sm:mb-6 md:mb-8">
             {/* Hero heading removed - now in navigation */}
             {/* Tagline removed - now in navigation */}
             
-            {/* Big Sliding Poster - Hero area */}
-            <div className="w-full mx-auto mt-3 sm:mt-4 md:mt-6 lg:mt-8 mb-3 sm:mb-4 md:mb-6 lg:mb-6 animate-fade-in-up stagger-3">
-              {/* Big Poster with Smooth Shuffling - Larger Size */}
-              <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm shadow-2xl">
-                <div className="relative h-72 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] overflow-hidden">
-                  {/* Hero Carousel Navigation Buttons - Glassy Style */}
-                  <div className="absolute left-4 top-1/2 -translate-y-1/2 z-20">
-                    <button
-                      onClick={() => {
-                        const container = document.querySelector('.flex.overflow-x-auto.scrollbar-hide') as HTMLElement;
-                        if (container) {
-                          const slideWidth = container.clientWidth;
-                          const currentScroll = container.scrollLeft;
-                          const newScroll = Math.max(0, currentScroll - slideWidth);
-                          container.scrollTo({ left: newScroll, behavior: 'smooth' });
-                          
-                          // Update poster index
-                          const newIndex = Math.round(newScroll / slideWidth);
-                          setPosterIndex(Math.max(0, newIndex));
-                        }
-                      }}
-                      disabled={posterIndex === 0}
-                      className={`w-12 h-12 rounded-full hero-nav-button left-nav flex items-center justify-center transition-all duration-300 ${
-                        posterIndex === 0 ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer hover:scale-110'
-                      }`}
-                      aria-label="Previous slide"
-                    >
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-                      </svg>
-                    </button>
-                  </div>
-
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20">
-                    <button
-                      onClick={() => {
-                        const container = document.querySelector('.flex.overflow-x-auto.scrollbar-hide') as HTMLElement;
-                        if (container) {
-                          const slideWidth = container.clientWidth;
-                          const currentScroll = container.scrollLeft;
-                          const maxScroll = container.scrollWidth - container.clientWidth;
-                          const newScroll = Math.min(maxScroll, currentScroll + slideWidth);
-                          container.scrollTo({ left: newScroll, behavior: 'smooth' });
-                          
-                          // Update poster index
-                          const newIndex = Math.round(newScroll / slideWidth);
-                          const maxIndex = products.filter((p: any) => !p.hiddenOnHome).slice(0, 6).length - 1;
-                          setPosterIndex(Math.min(maxIndex, newIndex));
-                        }
-                      }}
-                      disabled={posterIndex === products.filter((p: any) => !p.hiddenOnHome).slice(0, 6).length - 1}
-                      className={`w-12 h-12 rounded-full hero-nav-button right-nav flex items-center justify-center transition-all duration-300 ${
-                        posterIndex === products.filter((p: any) => !p.hiddenOnHome).slice(0, 6).length - 1 ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer hover:scale-110'
-                      }`}
-                      aria-label="Next slide"
-                    >
-                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
-
-
-                  
-                  {/* Manually Scrollable Product Images */}
-                  <div 
-                    className="flex overflow-x-auto scrollbar-hide h-full scroll-smooth"
-                    style={{ scrollSnapType: 'x mandatory' }}
-                    onScroll={(e) => {
-                      const target = e.currentTarget;
-                      const scrollPosition = target.scrollLeft;
-                      const slideWidth = target.scrollWidth / products.filter((p: any) => !p.hiddenOnHome).slice(0, 6).length;
-                      const currentIndex = Math.round(scrollPosition / slideWidth);
-                      setPosterIndex(currentIndex);
-                    }}
-                    onTouchStart={(e) => {
-                      // Pause auto-scroll on touch
-                      const container = e.currentTarget as HTMLDivElement & { autoResumeTimer?: NodeJS.Timeout };
-                      container.classList.add('user-interacting');
-                      if (container.autoResumeTimer) {
-                        clearTimeout(container.autoResumeTimer);
-                      }
-                    }}
-                    onTouchEnd={(e) => {
-                      // Resume auto-scroll after touch ends
-                      const container = e.currentTarget as HTMLDivElement & { autoResumeTimer?: NodeJS.Timeout };
-                      container.classList.remove('user-interacting');
-                      container.autoResumeTimer = setTimeout(() => {
-                        if (!container.classList.contains('user-interacting')) {
-                          container.classList.remove('user-interacting');
-                        }
-                      }, 3000); // Resume after 3 seconds of no interaction
-                    }}
-                    onMouseDown={(e) => {
-                      // Pause auto-scroll on mouse down
-                      const container = e.currentTarget as HTMLDivElement & { autoResumeTimer?: NodeJS.Timeout };
-                      container.classList.add('user-interacting');
-                      if (container.autoResumeTimer) {
-                        clearTimeout(container.autoResumeTimer);
-                      }
-                    }}
-                    onMouseUp={(e) => {
-                      // Resume auto-scroll after mouse up
-                      const container = e.currentTarget as HTMLDivElement & { autoResumeTimer?: NodeJS.Timeout };
-                      container.classList.remove('user-interacting');
-                      container.autoResumeTimer = setTimeout(() => {
-                        if (!container.classList.contains('user-interacting')) {
-                          container.classList.remove('user-interacting');
-                        }
-                      }, 3000); // Resume after 3 seconds of no interaction
-                    }}
-                    onMouseLeave={(e) => {
-                      // Resume auto-scroll when mouse leaves
-                      const container = e.currentTarget as HTMLDivElement & { autoResumeTimer?: NodeJS.Timeout };
-                      container.classList.remove('user-interacting');
-                      container.autoResumeTimer = setTimeout(() => {
-                        if (!container.classList.contains('user-interacting')) {
-                          container.classList.remove('user-interacting');
-                        }
-                      }, 1000); // Resume faster when mouse leaves
-                    }}
-                    onKeyDown={(e) => {
-                      const target = e.currentTarget as HTMLDivElement & { autoResumeTimer?: NodeJS.Timeout };
-                      const slideWidth = target.clientWidth;
-                      
-                      if (e.key === 'ArrowLeft') {
-                        e.preventDefault();
-                        target.scrollBy({ left: -slideWidth, behavior: 'smooth' });
-                        // Pause auto-scroll on keyboard interaction
-                        target.classList.add('user-interacting');
-                        if (target.autoResumeTimer) {
-                          clearTimeout(target.autoResumeTimer);
-                        }
-                        target.autoResumeTimer = setTimeout(() => {
-                          if (!target.classList.contains('user-interacting')) {
-                            target.classList.remove('user-interacting');
-                          }
-                        }, 3000);
-                      } else if (e.key === 'ArrowRight') {
-                        e.preventDefault();
-                        target.scrollBy({ left: slideWidth, behavior: 'smooth' });
-                        // Pause auto-scroll on keyboard interaction
-                        target.classList.add('user-interacting');
-                        if (target.autoResumeTimer) {
-                          clearTimeout(target.autoResumeTimer);
-                        }
-                        target.autoResumeTimer = setTimeout(() => {
-                          if (!target.classList.contains('user-interacting')) {
-                            target.classList.remove('user-interacting');
-                          }
-                        }, 3000);
-                      }
-                    }}
-                    tabIndex={0}
-                    role="region"
-                    aria-label="Hero product carousel - use arrow keys or drag to scroll"
-                  >
-                    {products.filter((p: any) => !p.hiddenOnHome).slice(0, 6).map((product, index) => (
-                      <div 
-                        key={`poster-${product.id}`} 
-                        className="relative flex-shrink-0 w-full h-full"
-                        style={{ scrollSnapAlign: 'start' }}
-                      >
-                        <img
-                          src={product.image_url}
-                          alt={product.name}
-                          className="w-full h-full object-cover"
-                        />
-                        {/* Gradient Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                        
-                        {/* Product Info Overlay - Simplified */}
-                        <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 md:p-5 lg:p-6">
-                          <div className="max-w-xs sm:max-w-sm md:max-w-xl">
-                            <h3 className="text-white font-bold text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-1 sm:mb-2 md:mb-3 line-clamp-2">
-                              {product.name}
-                            </h3>
-                            <p className="text-gray-300 text-xs sm:text-sm md:text-base lg:text-lg mb-2 sm:mb-3 md:mb-4 max-w-xs sm:max-w-sm md:max-w-md line-clamp-2">
-                              Experience premium quality and cutting-edge technology
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* Navigation Dots - Mobile Optimized */}
-                  <div className="absolute bottom-2 sm:bottom-3 md:bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-1.5 sm:space-x-2">
-                    {products.filter((p: any) => !p.hidden_on_home).slice(0, 6).map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => {
-                          const container = document.querySelector('.flex.overflow-x-auto.scrollbar-hide') as HTMLElement;
-                          if (container) {
-                            const slideWidth = container.clientWidth;
-                            container.scrollTo({ left: index * slideWidth, behavior: 'smooth' });
-                            setPosterIndex(index);
-                          }
-                        }}
-                        className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full transition-all duration-200 ${
-                          index === posterIndex 
-                            ? 'bg-[#F7DD0F] scale-125' 
-                            : 'bg-white/30 hover:bg-white/60'
-                        }`}
-                        aria-label={`Go to slide ${index + 1}`}
-                      />
-                    ))}
-                  </div>
-                  
-
-                </div>
-              </div>
-            </div>
+                         {/* Hero Sliding Card Carousel */}
+             <div className="w-full mx-auto mt-3 sm:mt-4 md:mt-6 lg:mt-8 mb-3 sm:mb-4 md:mb-6 lg:mb-6 animate-fade-in-up stagger-3">
+               {heroLoading ? (
+                 <div className="flex items-center justify-center h-64 bg-gradient-to-br from-gray-900 to-black rounded-2xl">
+                   <div className="text-center">
+                     <div className="w-12 h-12 border-4 border-[#F7DD0F] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                     <p className="text-[#F7DD0F] font-semibold">Loading Carousel...</p>
+                   </div>
+                 </div>
+               ) : (
+                 <SlidingCardCarousel slides={heroSlides} />
+               )}
+             </div>
 
             {/* Dope Picks Section - Now in main content area */}
             <div className="w-full mx-auto mt-6 sm:mt-8 md:mt-10 mb-6 sm:mb-8 md:mb-10 animate-fade-in-up stagger-4">
@@ -1118,42 +928,27 @@ export default function DopeTechEcommerce() {
               <div className="relative overflow-hidden cv-auto">
                 
                 <div 
-                  className="flex space-x-4 sm:space-x-6 md:space-x-8 overflow-x-auto scrollbar-hide pb-4 -mx-4 px-4 scroll-smooth"
-                  onScroll={(e) => {
-                    const target = e.currentTarget;
-                    if (target.scrollLeft > 0) {
-                      target.classList.add('user-scrolling');
-                    } else {
-                      target.classList.remove('user-scrolling');
-                    }
+                  className="flex space-x-4 sm:space-x-6 md:space-x-8 overflow-hidden pb-4"
+                  onMouseEnter={() => {
+                    const marquee = document.querySelector('.animate-marquee') as HTMLElement;
+                    if (marquee) marquee.style.animationPlayState = 'paused';
                   }}
-                  onTouchStart={marqueeControl.handleInteractionStart}
-                  onTouchEnd={() => marqueeControl.handleInteractionEnd(500)}
-                  onMouseDown={marqueeControl.handleInteractionStart}
-                  onMouseUp={() => marqueeControl.handleInteractionEnd(300)}
-                  onMouseEnter={marqueeControl.handleInteractionStart}
-                  onMouseLeave={() => marqueeControl.handleInteractionEnd(500)}
-                  onKeyDown={(e) => {
-                    const target = e.currentTarget;
-                    const scrollAmount = 200;
-                    
-                    if (e.key === 'ArrowLeft') {
-                      e.preventDefault();
-                      target.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-                      marqueeControl.handleInteractionStart();
-                      marqueeControl.handleInteractionEnd(1000);
-                    } else if (e.key === 'ArrowRight') {
-                      e.preventDefault();
-                      target.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-                      marqueeControl.handleInteractionStart();
-                      marqueeControl.handleInteractionEnd(1000);
-                    }
+                  onMouseLeave={() => {
+                    const marquee = document.querySelector('.animate-marquee') as HTMLElement;
+                    if (marquee) marquee.style.animationPlayState = 'running';
                   }}
-                  onFocus={marqueeControl.handleInteractionStart}
-                  onBlur={() => marqueeControl.handleInteractionEnd(300)}
-                  tabIndex={0}
+                  onTouchStart={() => {
+                    const marquee = document.querySelector('.animate-marquee') as HTMLElement;
+                    if (marquee) marquee.style.animationPlayState = 'paused';
+                  }}
+                  onTouchEnd={() => {
+                    setTimeout(() => {
+                      const marquee = document.querySelector('.animate-marquee') as HTMLElement;
+                      if (marquee) marquee.style.animationPlayState = 'running';
+                    }, 500);
+                  }}
                   role="region"
-                  aria-label="Product carousel - use arrow keys or drag to scroll"
+                  aria-label="Product carousel - auto-scrolling marquee"
                 >
                   {/* Continuous Marquee Row */}
                   <div className="flex animate-marquee space-x-4 sm:space-x-6 md:space-x-8 min-w-max">
@@ -1162,10 +957,6 @@ export default function DopeTechEcommerce() {
                       <div 
                         key={`marquee-first-${product.id}`} 
                         className="group relative flex-shrink-0"
-                        onMouseEnter={marqueeControl.handleInteractionStart}
-                        onMouseLeave={() => marqueeControl.handleInteractionEnd(500)}
-                        onTouchStart={marqueeControl.handleInteractionStart}
-                        onTouchEnd={() => marqueeControl.handleInteractionEnd(500)}
                       >
                         <div className="relative overflow-hidden rounded-2xl w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 bg-gradient-to-br from-white/5 to-white/10 border border-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
                           <img
@@ -1183,7 +974,7 @@ export default function DopeTechEcommerce() {
                             <p className="text-[#F7DD0F] font-bold text-sm sm:text-base md:text-lg mb-3">Rs {product.price}</p>
                             <button
                               onClick={() => handleAddToCartWithTracking(product)}
-                              className="bg-[#F7DD0F] text-black px-3 py-2 sm:px-4 sm:py-2.5 rounded-full font-semibold hover:bg-[#F7DD0F]/90 transition-all duration-200 hover:scale-105 shadow-lg text-xs sm:text-sm w-full"
+                              className="bg-[#F7DD0F] text-black px-3 py-2 sm:px-4 sm:py-2.5 rounded-full font-semibold hover:bg-[#F7DD0F]/90 transition-all duration-200 hover:scale-105 shadow-lg text-xs sm:text-sm w-full btn-fluid"
                             >
                               Add to Cart
                             </button>
@@ -1197,10 +988,6 @@ export default function DopeTechEcommerce() {
                       <div 
                         key={`marquee-second-${product.id}`} 
                         className="group relative flex-shrink-0"
-                        onMouseEnter={marqueeControl.handleInteractionStart}
-                        onMouseLeave={() => marqueeControl.handleInteractionEnd(500)}
-                        onTouchStart={marqueeControl.handleInteractionStart}
-                        onTouchEnd={() => marqueeControl.handleInteractionEnd(500)}
                       >
                         <div className="relative overflow-hidden rounded-2xl w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 bg-gradient-to-br from-white/5 to-white/10 border border-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
                           <img
@@ -1218,7 +1005,7 @@ export default function DopeTechEcommerce() {
                             <p className="text-[#F7DD0F] font-bold text-sm sm:text-base md:text-lg mb-3">Rs {product.price}</p>
                             <button
                               onClick={() => handleAddToCartWithTracking(product)}
-                              className="bg-[#F7DD0F] text-black px-3 py-2 sm:px-4 sm:py-2.5 rounded-full font-semibold hover:bg-[#F7DD0F]/90 transition-all duration-200 hover:scale-105 shadow-lg text-xs sm:text-sm w-full"
+                              className="bg-[#F7DD0F] text-black px-3 py-2 sm:px-4 sm:py-2.5 rounded-full font-semibold hover:bg-[#F7DD0F]/90 transition-all duration-200 hover:scale-105 shadow-lg text-xs sm:text-sm w-full btn-fluid"
                             >
                               Add to Cart
                             </button>
@@ -1255,7 +1042,7 @@ export default function DopeTechEcommerce() {
                   <div key={category.id} className="relative animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
                     <button
                       onClick={() => handleCategoryClick(category.id)}
-                      className={`flex items-center space-x-2 px-3 sm:px-4 md:px-5 py-2 sm:py-3 md:py-4 rounded-full transition-all duration-200 cursor-pointer text-xs sm:text-sm md:text-base touch-target hover-scale hover-glow min-h-[36px] ${
+                      className={`flex items-center space-x-2 px-3 sm:px-4 md:px-5 py-2 sm:py-3 md:py-4 rounded-full transition-all duration-200 cursor-pointer text-xs sm:text-sm md:text-base touch-target hover-scale hover-glow min-h-[36px] category-transition btn-fluid ${
                         selectedCategory === category.id
                           ? "bg-[#F7DD0F] text-black shadow-lg animate-pulse font-bold"
                           : "bg-white/5 backdrop-blur-md border-0 sm:border sm:border-white/20 hover:bg-white/10 sm:hover:border-white/30 font-medium shadow-lg"
@@ -1285,7 +1072,7 @@ export default function DopeTechEcommerce() {
                   <div key={category.id} className="relative animate-fade-in-up" style={{ animationDelay: `${(index + 3) * 0.1}s` }}>
                     <button
                       onClick={() => handleCategoryClick(category.id)}
-                      className={`flex items-center space-x-2 px-3 sm:px-4 md:px-5 py-2 sm:py-3 md:py-4 rounded-full transition-all duration-200 cursor-pointer text-xs sm:text-sm md:text-base touch-target hover-scale hover-glow min-h-[36px] ${
+                      className={`flex items-center space-x-2 px-3 sm:px-4 md:px-5 py-2 sm:py-3 md:py-4 rounded-full transition-all duration-200 cursor-pointer text-xs sm:text-sm md:text-base touch-target hover-scale hover-glow min-h-[36px] category-transition btn-fluid ${
                         selectedCategory === category.id
                           ? "bg-[#F7DD0F] text-black shadow-lg animate-pulse font-bold"
                           : "bg-white/5 backdrop-blur-md border-0 sm:border sm:border-white/20 hover:bg-white/10 sm:hover:border-white/30 font-medium shadow-lg"
@@ -1317,7 +1104,7 @@ export default function DopeTechEcommerce() {
                 : "grid-cols-1"
             }`}>
             {filteredProducts.map((product, index) => (
-              <div key={product.id} data-product-id={product.id} className="group animate-fade-in-up mobile-product-card hover-lift" style={{ animationDelay: `${index * 0.1}s` }}>
+              <div key={product.id} data-product-id={product.id} className="group animate-fade-in-up mobile-product-card hover-lift product-card-fluid scroll-animate" style={{ animationDelay: `${index * 0.1}s` }}>
                                 <div 
                                   className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer"
                                   onClick={() => router.push(`/product/${product.id}`)}
@@ -1353,19 +1140,19 @@ export default function DopeTechEcommerce() {
                           )}
                         </div>
                         <div className="flex items-center gap-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              addToCart(product)
-                            }}
-                            disabled={!product.in_stock}
-                            aria-label="Add to cart"
-                            className={`inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full shadow transition-transform active:scale-95 cursor-pointer z-10 relative ${
-                              product.in_stock
-                                ? "bg-[#F7DD0F] text-black hover:bg-[#F7DD0F]/90"
-                                : "bg-gray-500/40 text-gray-300 cursor-not-allowed"
-                            }`}
-                          >
+                                                     <button
+                             onClick={(e) => {
+                               e.stopPropagation()
+                               addToCart(product)
+                             }}
+                             disabled={!product.in_stock}
+                             aria-label="Add to cart"
+                             className={`inline-flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full shadow transition-transform active:scale-95 cursor-pointer z-10 relative btn-fluid ${
+                               product.in_stock
+                                 ? "bg-[#F7DD0F] text-black hover:bg-[#F7DD0F]/90"
+                                 : "bg-gray-500/40 text-gray-300 cursor-not-allowed"
+                             }`}
+                           >
                             <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                           </button>
                         </div>
@@ -1397,8 +1184,8 @@ export default function DopeTechEcommerce() {
         </div>
       </section>
 
-      {/* Dope Weekly Picks Section - 2x2 Grid */}
-      <section className="pt-8 sm:pt-12 pb-20 sm:pb-24 overflow-hidden relative" style={{ background: 'linear-gradient(135deg, #000000 0%, #1a1a0a 50%, #000000 100%)' }}>
+             {/* Dope Weekly Picks Section - 2x2 Grid */}
+       <section className="pt-8 sm:pt-12 pb-20 sm:pb-24 overflow-hidden relative section-slide-in" style={{ background: 'linear-gradient(135deg, #000000 0%, #1a1a0a 50%, #000000 100%)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="w-full mx-auto mt-8 sm:mt-10 md:mt-12 mb-6 sm:mb-8 md:mb-10 animate-fade-in-up stagger-5">
             <div className="text-center mb-4 sm:mb-6">
@@ -1412,12 +1199,12 @@ export default function DopeTechEcommerce() {
             
             {/* 2x2 Grid Layout - 2x Bigger than Marquee */}
             <div className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
-              {products.filter((p: any) => !p.hidden_on_home).slice(0, 4).map((product, index) => (
-                <div key={`weekly-pick-${product.id}`} className="group relative animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
-                  <div 
-                    className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-white/5 to-white/10 border-0 sm:border sm:border-white/10 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-rotate-1 cursor-pointer"
-                    onClick={() => router.push(`/product/${product.id}`)}
-                  >
+                             {products.filter((p: any) => !p.hidden_on_home).slice(0, 4).map((product, index) => (
+                 <div key={`weekly-pick-${product.id}`} className="group relative animate-fade-in-up product-card-fluid scroll-animate" style={{ animationDelay: `${index * 0.1}s` }}>
+                   <div 
+                     className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-white/5 to-white/10 border-0 sm:border sm:border-white/10 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-rotate-1 cursor-pointer"
+                     onClick={() => router.push(`/product/${product.id}`)}
+                   >
                     {/* 2x Bigger than marquee: w-80 h-80 sm:w-96 sm:h-96 md:w-[28rem] md:h-[28rem] lg:w-[32rem] lg:h-[32rem] */}
                     <div className="w-80 h-80 sm:w-96 sm:h-96 md:w-[28rem] md:h-[28rem] lg:w-[32rem] lg:h-[32rem] mx-auto">
                       <img
@@ -1435,13 +1222,13 @@ export default function DopeTechEcommerce() {
                       <div className="space-y-3 sm:space-y-4">
                         <h3 className="text-white font-bold text-lg sm:text-xl lg:text-2xl mb-2 line-clamp-2 leading-tight">{product.name}</h3>
                         <p className="text-[#F7DD0F] font-bold text-xl sm:text-2xl lg:text-3xl mb-3">Rs {product.price}</p>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleAddToCartWithTracking(product)
-                          }}
-                          className="bg-[#F7DD0F] text-black px-4 py-2 sm:px-5 sm:py-3 rounded-xl font-bold hover:bg-[#F7DD0F]/90 transition-all duration-300 hover:shadow-2xl w-full text-sm sm:text-base shadow-lg z-10 relative cursor-pointer"
-                        >
+                                                 <button
+                           onClick={(e) => {
+                             e.stopPropagation()
+                             handleAddToCartWithTracking(product)
+                           }}
+                           className="bg-[#F7DD0F] text-black px-4 py-2 sm:px-5 sm:py-3 rounded-xl font-bold hover:bg-[#F7DD0F]/90 transition-all duration-300 hover:shadow-2xl w-full text-sm sm:text-base shadow-lg z-10 relative cursor-pointer btn-fluid"
+                         >
                           Add to Cart
                         </button>
                       </div>
@@ -1459,8 +1246,8 @@ export default function DopeTechEcommerce() {
         </div>
       </section>
 
-      {/* GIF Section - Moved from hero area */}
-      <section className="pt-8 sm:pt-12 pb-20 sm:pb-24 overflow-hidden relative" style={{ background: 'linear-gradient(135deg, #000000 0%, #1a1a0a 50%, #000000 100%)' }}>
+             {/* GIF Section - Moved from hero area */}
+       <section className="pt-8 sm:pt-12 pb-20 sm:pb-24 overflow-hidden relative section-fade-in" style={{ background: 'linear-gradient(135deg, #000000 0%, #1a1a0a 50%, #000000 100%)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center mb-6 sm:mb-8 md:mb-10 animate-fade-in-up">
@@ -1689,7 +1476,8 @@ export default function DopeTechEcommerce() {
         cart={cart}
         total={getCartTotal()}
         onCartReset={handleCartReset}
-      />
-    </div>
+             />
+      </div>
+    </PageTransition>
   )
 }
