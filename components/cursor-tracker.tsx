@@ -73,8 +73,13 @@ export default function CursorTracker() {
           el.removeEventListener("mouseenter", handleMouseEnter)
           el.removeEventListener("mouseleave", handleMouseLeave)
         })
-        if (cursor.parentNode) {
-          cursor.parentNode.removeChild(cursor)
+        // Safe removal of cursor element
+        if (cursor && cursor.parentNode) {
+          try {
+            cursor.parentNode.removeChild(cursor)
+          } catch (error) {
+            console.warn('Cursor element already removed:', error)
+          }
         }
         // Restore cursor on cleanup
         document.body.style.cursor = ''

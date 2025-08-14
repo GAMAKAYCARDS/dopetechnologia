@@ -48,7 +48,13 @@ export default function SEOOptimizer({
       document.head.appendChild(script)
 
       return () => {
-        document.head.removeChild(script)
+        if (script && script.parentNode) {
+          try {
+            document.head.removeChild(script)
+          } catch (error) {
+            console.warn('Script element already removed:', error)
+          }
+        }
       }
     }
   }, [title, description, keywords, structuredData])

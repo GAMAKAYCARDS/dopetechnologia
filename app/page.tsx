@@ -1515,7 +1515,18 @@ export default function DopeTechEcommerce() {
                 const videoElement = e.target as HTMLVideoElement;
                 const container = videoElement.parentElement;
                 if (container) {
-                  container.innerHTML = '<img src="/placeholder.jpg" alt="DopeTech Video" className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 shadow-xl object-cover object-center" />';
+                  try {
+                    // Create a new image element instead of using innerHTML
+                    const img = document.createElement('img');
+                    img.src = '/placeholder.jpg';
+                    img.alt = 'DopeTech Video';
+                    img.className = 'w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 shadow-xl object-cover object-center';
+                    
+                    // Replace the video element with the image
+                    container.replaceChild(img, videoElement);
+                  } catch (error) {
+                    console.warn('Error replacing video with fallback image:', error);
+                  }
                 }
               }}
               onLoadStart={() => console.log('Video loading started')}
