@@ -90,7 +90,7 @@ export default function ProductPageClient({ product, relatedProducts }: ProductP
              <div className="aspect-square max-w-md mx-auto xl:max-w-lg bg-black rounded-lg sm:rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 border border-[#F7DD0F]/30 group">
                <div className="relative w-full h-full">
                  <img
-                   src={product.image}
+                   src={product.image_url}
                    alt={product.name}
                    className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:brightness-110"
                    loading="lazy"
