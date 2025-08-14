@@ -353,7 +353,7 @@ export default function GoogleFormsCheckout({ isOpen, onClose, cart, total, onCa
         {/* Header */}
         <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/20 bg-white/10 backdrop-blur-sm">
           <div className="flex items-center space-x-3 md:space-x-4">
-                            <img src="/api/assets/logo" alt="DopeTech" className="h-6 md:h-8 w-auto" />
+                            <img src="/logo/dopelogo.svg" alt="DopeTech" className="h-6 md:h-8 w-auto" />
             <span className="text-base md:text-lg font-semibold text-[#F7DD0F]">
               {currentStep === 'customer-info' ? 'Checkout' : 'Payment'}
             </span>
