@@ -730,7 +730,7 @@ export default function DopeTechEcommerce() {
           <nav className="flex items-center justify-between h-auto min-h-16">
             {/* Left Side - Logo */}
             <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3 min-w-0 flex-1 pt-1">
-                              <img src="/logo/dopelogo.svg" alt="DopeTech" className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 logo-adaptive flex-shrink-0 origin-left scale-[1.3]" />
+                              <img src="/logo/simple-logo.svg" alt="DopeTech" className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 logo-adaptive flex-shrink-0 origin-left scale-[1.3]" />
               
               {/* Tagline - Mobile: Headline Only, Desktop: Both */}
               <div className="ml-2 md:ml-3">
@@ -1508,6 +1508,18 @@ export default function DopeTechEcommerce() {
               muted
               playsInline
               key={animationKey}
+              onError={(e) => {
+                console.error('Video error:', e);
+                // Fallback to image if video fails
+                const videoElement = e.target as HTMLVideoElement;
+                const container = videoElement.parentElement;
+                if (container) {
+                  container.innerHTML = '<img src="/placeholder.jpg" alt="DopeTech Video" className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 shadow-xl object-cover object-center" />';
+                }
+              }}
+              onLoadStart={() => console.log('Video loading started')}
+              onCanPlay={() => console.log('Video can play')}
+              controls
             />
           </div>
         </div>

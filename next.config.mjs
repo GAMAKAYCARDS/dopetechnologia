@@ -20,11 +20,11 @@ const nextConfig = {
     loader: 'default',
     path: '',
   },
-  // Ensure all routes are pre-rendered
+  // Configure build behavior
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
     optimizeCss: true,
-    // Ensure all pages are statically generated
+    // Prevent API routes from being prerendered
     workerThreads: false,
     cpus: 1,
     turbo: {
@@ -50,6 +50,16 @@ const nextConfig = {
   reactStrictMode: true,
   // Asset optimization
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
+  // Configure for App Router and disable API route prerendering
+  output: 'standalone',
+  trailingSlash: false,
+  // Disable prerendering for API routes
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    optimizeCss: true,
+    workerThreads: false,
+    cpus: 1,
+  },
   // Bundle analyzer
   ...(process.env.ANALYZE === 'true' && {
     webpack: (config) => {
