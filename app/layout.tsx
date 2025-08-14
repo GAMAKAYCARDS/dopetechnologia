@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     title: 'DopeTech',
           startupImage: [
       {
-        url: '/logo/dopelogo.svg',
+        url: '/api/assets/logo',
         media: '(device-width: 320px) and (device-height: 568px)',
       },
     ],
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     siteName: 'DopeTech Nepal',
     images: [
       {
-        url: '/logo/dopelogo.svg',
+        url: '/api/assets/logo',
         width: 1200,
         height: 630,
         alt: 'DopeTech Nepal',
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'DopeTech Nepal - Premium Tech Gear',
     description: 'Premium tech gear from DopeTech Nepal. Mechanical keyboards, gaming mice, wireless headphones, and more.',
-    images: ['/logo/dopelogo.svg'],
+    images: ['/api/assets/logo'],
     creator: '@dopetech_np',
   },
   verification: {
@@ -105,7 +105,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//fonts.googleapis.com" />
         
         {/* Preload critical resources */}
-        <link rel="preload" href="/logo/dopelogo.svg" as="image" type="image/svg+xml" />
+        <link rel="preload" href="/api/assets/logo" as="image" type="image/svg+xml" />
 
         
         {/* Meta tags for performance */}
@@ -121,8 +121,8 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         
         {/* Favicon */}
-        <link rel="icon" href="/logo/dopelogo.svg" />
-        <link rel="apple-touch-icon" href="/logo/dopelogo.svg" />
+        <link rel="icon" href="/api/assets/logo" />
+        <link rel="apple-touch-icon" href="/api/assets/logo" />
         
         {/* Performance hints */}
         <link rel="dns-prefetch" href="//www.google-analytics.com" />
