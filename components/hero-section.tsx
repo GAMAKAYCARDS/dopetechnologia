@@ -27,7 +27,7 @@ export default function HeroSection({ cartCount, onCartClick }: HeroSectionProps
           {/* Logo */}
                      <div className="flex items-center space-x-2 md:space-x-3">
             <Image
-                             src="/api/assets/logo"
+                             src="/logo/dopelogo.svg"
               alt="DopeTech"
               width={320}
               height={320}
