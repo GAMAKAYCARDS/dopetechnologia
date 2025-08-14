@@ -2,13 +2,14 @@ import { getProductById, getProducts } from "@/lib/products-data"
 import ProductPageClient from "./product-page-client"
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const productId = parseInt(await params.id)
+  const resolvedParams = await params
+  const productId = parseInt(resolvedParams.id)
   
   try {
     const product = await getProductById(productId)

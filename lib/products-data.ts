@@ -17,11 +17,9 @@ export interface Product {
   hidden_on_home?: boolean;
 }
 
-// Fetch products from Supabase with local fallback
+// Fetch products directly from Supabase
 export async function getProducts(): Promise<Product[]> {
   try {
-    console.log('🔗 Connecting to Supabase...')
-    
     const { data, error } = await supabase
       .from('products')
       .select('*')
@@ -30,27 +28,13 @@ export async function getProducts(): Promise<Product[]> {
 
     if (error) {
       console.error('❌ Supabase error:', error);
-      throw error; // Throw error to trigger fallback
+      throw error;
     }
 
-    console.log('✅ Supabase query successful')
-    console.log('📦 Data received:', data?.length || 0, 'products')
-    
     return data || [];
   } catch (error) {
-    console.error('❌ Error fetching products from Supabase:', error);
-    console.log('🔄 Falling back to local products data...')
-    
-    try {
-      // Import local products as fallback
-      const localProducts = await import('../processed-products.json')
-      console.log('✅ Local fallback successful')
-      console.log('📦 Local data received:', localProducts.default?.length || 0, 'products')
-      return localProducts.default || []
-    } catch (localError) {
-      console.error('❌ Local fallback also failed:', localError)
-      return []
-    }
+    console.error('❌ Error fetching products:', error);
+    return [];
   }
 }
 

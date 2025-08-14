@@ -20,13 +20,10 @@ const nextConfig = {
     loader: 'default',
     path: '',
   },
-  // Configure build behavior
+  // Configure build behavior - removed problematic experimental features
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-    optimizeCss: true,
-    // Prevent API routes from being prerendered
-    workerThreads: false,
-    cpus: 1,
+    // Removed optimizeCss and other problematic features
     turbo: {
       rules: {
         '*.svg': {

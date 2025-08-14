@@ -476,8 +476,11 @@ export default function DopeTechAdmin() {
                     <label className="block text-sm font-medium mb-2">Price (Rs)</label>
                     <input
                       type="number"
-                      value={newProduct.price}
-                      onChange={(e) => setNewProduct({...newProduct, price: parseFloat(e.target.value)})}
+                      value={newProduct.price || ''}
+                      onChange={(e) => {
+                        const value = e.target.value === '' ? 0 : parseFloat(e.target.value)
+                        setNewProduct({...newProduct, price: isNaN(value) ? 0 : value})
+                      }}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F]"
                     />
                   </div>
@@ -486,8 +489,11 @@ export default function DopeTechAdmin() {
                     <label className="block text-sm font-medium mb-2">Original Price (Rs)</label>
                     <input
                       type="number"
-                      value={newProduct.original_price}
-                      onChange={(e) => setNewProduct({...newProduct, original_price: parseFloat(e.target.value)})}
+                      value={newProduct.original_price || ''}
+                      onChange={(e) => {
+                        const value = e.target.value === '' ? 0 : parseFloat(e.target.value)
+                        setNewProduct({...newProduct, original_price: isNaN(value) ? 0 : value})
+                      }}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F]"
                     />
                   </div>
@@ -563,8 +569,11 @@ export default function DopeTechAdmin() {
                       min="0"
                       max="5"
                       step="0.1"
-                      value={newProduct.rating}
-                      onChange={(e) => setNewProduct({...newProduct, rating: parseFloat(e.target.value)})}
+                      value={newProduct.rating || ''}
+                      onChange={(e) => {
+                        const value = e.target.value === '' ? 0 : parseFloat(e.target.value)
+                        setNewProduct({...newProduct, rating: isNaN(value) ? 0 : value})
+                      }}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F]"
                     />
                   </div>
@@ -573,8 +582,11 @@ export default function DopeTechAdmin() {
                     <label className="block text-sm font-medium mb-2">Reviews Count</label>
                     <input
                       type="number"
-                      value={newProduct.reviews}
-                      onChange={(e) => setNewProduct({...newProduct, reviews: parseInt(e.target.value)})}
+                      value={newProduct.reviews || ''}
+                      onChange={(e) => {
+                        const value = e.target.value === '' ? 0 : parseInt(e.target.value)
+                        setNewProduct({...newProduct, reviews: isNaN(value) ? 0 : value})
+                      }}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F]"
                     />
                   </div>
@@ -585,8 +597,11 @@ export default function DopeTechAdmin() {
                       type="number"
                       min="0"
                       max="100"
-                      value={newProduct.discount}
-                      onChange={(e) => setNewProduct({...newProduct, discount: parseInt(e.target.value)})}
+                      value={newProduct.discount || ''}
+                      onChange={(e) => {
+                        const value = e.target.value === '' ? 0 : parseInt(e.target.value)
+                        setNewProduct({...newProduct, discount: isNaN(value) ? 0 : value})
+                      }}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F]"
                     />
                   </div>
@@ -668,8 +683,11 @@ export default function DopeTechAdmin() {
                     <label className="block text-sm font-medium mb-2">Price (Rs)</label>
                     <input
                       type="number"
-                      value={newProduct.price}
-                      onChange={(e) => setNewProduct({...newProduct, price: parseFloat(e.target.value)})}
+                      value={newProduct.price || ''}
+                      onChange={(e) => {
+                        const value = e.target.value === '' ? 0 : parseFloat(e.target.value)
+                        setNewProduct({...newProduct, price: isNaN(value) ? 0 : value})
+                      }}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F]"
                     />
                   </div>
@@ -678,8 +696,11 @@ export default function DopeTechAdmin() {
                     <label className="block text-sm font-medium mb-2">Original Price (Rs)</label>
                     <input
                       type="number"
-                      value={newProduct.original_price}
-                      onChange={(e) => setNewProduct({...newProduct, original_price: parseFloat(e.target.value)})}
+                      value={newProduct.original_price || ''}
+                      onChange={(e) => {
+                        const value = e.target.value === '' ? 0 : parseFloat(e.target.value)
+                        setNewProduct({...newProduct, original_price: isNaN(value) ? 0 : value})
+                      }}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F]"
                     />
                   </div>
@@ -755,8 +776,11 @@ export default function DopeTechAdmin() {
                       min="0"
                       max="5"
                       step="0.1"
-                      value={newProduct.rating}
-                      onChange={(e) => setNewProduct({...newProduct, rating: parseFloat(e.target.value)})}
+                      value={newProduct.rating || ''}
+                      onChange={(e) => {
+                        const value = e.target.value === '' ? 0 : parseFloat(e.target.value)
+                        setNewProduct({...newProduct, rating: isNaN(value) ? 0 : value})
+                      }}
                       className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F]"
                     />
                   </div>

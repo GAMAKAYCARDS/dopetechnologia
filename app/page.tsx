@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import { useLogoUrl, useVideoUrl } from "@/hooks/use-assets"
+import { useMarqueeControl } from "@/hooks/useMarqueeControl"
 import { useRouter } from "next/navigation"
 import {
   Headphones,
@@ -30,10 +31,7 @@ import SupabaseCheckout from "@/components/supabase-checkout"
 import { getProducts, type Product } from "@/lib/products-data"
 import { useCart } from "@/contexts/cart-context"
 
-
 // Product type is now imported from lib/products-data
-
-
 
 export default function DopeTechEcommerce() {
   const router = useRouter()
@@ -41,6 +39,9 @@ export default function DopeTechEcommerce() {
   const { videoUrl, loading: videoLoading } = useVideoUrl()
   const [scrollY, setScrollY] = useState(0)
   const [products, setProducts] = useState<Product[]>([])
+  
+
+  
   const { 
     cart, 
     addToCart, 
@@ -67,6 +68,9 @@ export default function DopeTechEcommerce() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchModalReady, setSearchModalReady] = useState(false)
   const [currentProducts, setCurrentProducts] = useState<Product[]>([])
+  
+
+  
   const [showBackToCategories, setShowBackToCategories] = useState(false)
   const [isCategoryInView, setIsCategoryInView] = useState(true)
   const [categoryIconIndex, setCategoryIconIndex] = useState(0)
@@ -81,92 +85,75 @@ export default function DopeTechEcommerce() {
     searchHistory: [] as string[]
   })
 
-
   const [animationKey, setAnimationKey] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [posterIndex, setPosterIndex] = useState(0)
   const searchModalRef = useRef<HTMLDivElement>(null)
   const categorySectionRef = useRef<HTMLDivElement>(null)
+  
+  // Marquee control hook
+  const marqueeControl = useMarqueeControl()
 
+  // Optimized scroll handler with passive listener
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const handleScroll = () => setScrollY(window.scrollY)
-      // Use passive listener for better scroll perf
-      window.addEventListener("scroll", handleScroll, { passive: true } as any)
+      window.addEventListener("scroll", handleScroll, { passive: true })
       
       return () => {
-        window.removeEventListener("scroll", handleScroll as any)
+        window.removeEventListener("scroll", handleScroll)
       }
     }
   }, [])
 
-  // Fetch products from Supabase with timeout
+  // Simplified product fetching - no complex caching or timeouts
   useEffect(() => {
-    let fallbackTimeout: NodeJS.Timeout | null = null
+    let isMounted = true
 
     const fetchProducts = async () => {
       try {
         console.log('🔄 Fetching products from Supabase...')
         
-        // Add timeout to prevent infinite loading
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Request timeout')), 5000) // Reduced to 5 second timeout
-        })
+        const supabaseProducts = await getProducts()
         
-        const productsPromise = getProducts()
-        const supabaseProducts = await Promise.race([productsPromise, timeoutPromise]) as Product[]
-        
-        console.log('📦 Products fetched:', supabaseProducts.length)
-        
-        if (supabaseProducts && supabaseProducts.length > 0) {
-          console.log('✅ Setting products:', supabaseProducts.length, 'products')
-          setProducts(supabaseProducts)
-        } else {
-          console.log('⚠️ No products received, using empty array')
-          setProducts([])
-        }
-        
-        setIsLoading(false)
-        
-        // Clear the fallback timeout since we successfully fetched products
-        if (fallbackTimeout) {
-          clearTimeout(fallbackTimeout)
-          fallbackTimeout = null
-          console.log('✅ Cleared fallback timeout - products loaded successfully')
+        if (isMounted) {
+          console.log('📦 Products fetched:', supabaseProducts.length)
+          
+          if (supabaseProducts && supabaseProducts.length > 0) {
+            console.log('✅ Setting products:', supabaseProducts.length, 'products')
+            setProducts(supabaseProducts)
+            setCurrentProducts(supabaseProducts)
+          } else {
+            console.log('⚠️ No products received')
+            setProducts([])
+            setCurrentProducts([])
+          }
+          
+          setIsLoading(false)
         }
       } catch (error) {
         console.error('❌ Error fetching products:', error)
-        console.log('⚠️ Setting empty products due to error')
-        setProducts([])
-        setIsLoading(false)
+        if (isMounted) {
+          setProducts([])
+          setCurrentProducts([])
+          setIsLoading(false)
+        }
       }
     }
-
-    // Add a fallback timeout to ensure loading state is always cleared
-    fallbackTimeout = setTimeout(() => {
-      console.warn('⚠️ Fallback timeout reached - clearing loading state')
-      setIsLoading(false)
-      // Ensure we have an empty products array if nothing loaded
-      if (products.length === 0) {
-        setProducts([])
-      }
-    }, 8000) // Reduced to 8 second fallback
 
     fetchProducts()
 
     return () => {
-      if (fallbackTimeout) {
-        clearTimeout(fallbackTimeout)
-      }
+      isMounted = false
     }
   }, [])
 
-  // Dynamically measure header height and apply as hero top padding to avoid clipping
+  // Optimized header height measurement
   useEffect(() => {
     if (typeof window === 'undefined') return
-    const header = document.querySelector('header.dopetech-nav') as HTMLElement | null
-
+    
     const updateOffset = () => {
+      const header = document.querySelector('header.dopetech-nav') as HTMLElement | null
       const h = header ? header.getBoundingClientRect().height : 56
       const extra = window.innerWidth >= 1024 ? 8 : 16
       setHeaderOffset(Math.round(h + extra))
@@ -175,12 +162,15 @@ export default function DopeTechEcommerce() {
     updateOffset()
 
     const onResize = () => updateOffset()
-    window.addEventListener('resize', onResize)
+    window.addEventListener('resize', onResize, { passive: true })
 
     let ro: ResizeObserver | null = null
-    if (typeof ResizeObserver !== 'undefined' && header) {
-      ro = new ResizeObserver(updateOffset)
-      ro.observe(header)
+    if (typeof ResizeObserver !== 'undefined') {
+      const header = document.querySelector('header.dopetech-nav')
+      if (header) {
+        ro = new ResizeObserver(updateOffset)
+        ro.observe(header)
+      }
     }
 
     return () => {
@@ -189,42 +179,16 @@ export default function DopeTechEcommerce() {
     }
   }, [isMobileMenuOpen, isSearchOpen])
 
-  // Defer applying search text (debounced) to reduce re-renders while typing
+  // Optimized search debouncing
   useEffect(() => {
     const t = setTimeout(() => setSearchQuery(searchDraft), 200)
     return () => clearTimeout(t)
   }, [searchDraft])
 
-  // Update products when products state changes
+  // Update currentProducts when products state changes
   useEffect(() => {
-    console.log('🔄 Products state changed:', products.length, 'products')
     setCurrentProducts(products)
   }, [products])
-
-  // Auto-shuffle poster products
-  useEffect(() => {
-    if (products.length === 0) return
-    
-    const interval = setInterval(() => {
-      const container = document.querySelector('.flex.overflow-x-auto.scrollbar-hide') as HTMLElement;
-      if (container && !container.classList.contains('user-interacting')) {
-        const productsToShow = products.filter((p: any) => !p.hidden_on_home).slice(0, 6);
-        if (productsToShow.length === 0) return
-        
-        const currentIndex = posterIndex;
-        const nextIndex = (currentIndex + 1) % productsToShow.length;
-        
-        // Scroll to the next slide
-        const slideWidth = container.clientWidth;
-        const newScrollLeft = nextIndex * slideWidth;
-        
-        container.scrollTo({ left: newScrollLeft, behavior: 'smooth' });
-        setPosterIndex(nextIndex);
-      }
-    }, 4000) // Change every 4 seconds
-
-    return () => clearInterval(interval)
-  }, [posterIndex, products])
 
   // Initialize admin mode and promo order preferences
   useEffect(() => {
@@ -244,14 +208,12 @@ export default function DopeTechEcommerce() {
     }
   }, [])
 
-  // Listen for localStorage changes
+  // Optimized event listeners
   useEffect(() => {
     const handleGifChange = () => {
-      // Force re-render to update GIF
       setAnimationKey(prev => prev + 1)
     }
 
-    // Listen for custom events (for same-tab updates)
     window.addEventListener('gifUpdated', handleGifChange)
     
     return () => {
@@ -259,7 +221,7 @@ export default function DopeTechEcommerce() {
     }
   }, [])
 
-  // Handle keyboard events and click outside for search modal
+  // Optimized search modal handlers
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isSearchOpen) {
@@ -270,15 +232,6 @@ export default function DopeTechEcommerce() {
 
     const handleClickOutside = (e: MouseEvent) => {
       if (searchModalRef.current && !searchModalRef.current.contains(e.target as Node) && searchModalReady) {
-        console.log("Click outside detected")
-        setIsSearchOpen(false)
-        setSearchQuery("")
-      }
-    }
-
-    const handleTouchOutside = (e: TouchEvent) => {
-      if (searchModalRef.current && !searchModalRef.current.contains(e.target as Node) && searchModalReady) {
-        console.log("Touch outside detected")
         setIsSearchOpen(false)
         setSearchQuery("")
       }
@@ -287,8 +240,6 @@ export default function DopeTechEcommerce() {
     if (isSearchOpen) {
       document.addEventListener('keydown', handleKeyDown)
       document.addEventListener('mousedown', handleClickOutside)
-      document.addEventListener('touchstart', handleTouchOutside)
-      // Prevent body scroll when search is open
       document.body.style.overflow = 'hidden'
     } else {
       document.body.style.overflow = 'unset'
@@ -297,12 +248,11 @@ export default function DopeTechEcommerce() {
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
       document.removeEventListener('mousedown', handleClickOutside)
-      document.removeEventListener('touchstart', handleTouchOutside)
       document.body.style.overflow = 'unset'
     }
   }, [isSearchOpen, searchModalReady])
 
-  // Set modal as ready after a short delay to prevent immediate closing
+  // Optimized modal ready state
   useEffect(() => {
     if (isSearchOpen) {
       const timer = setTimeout(() => {
@@ -317,7 +267,7 @@ export default function DopeTechEcommerce() {
     }
   }, [isSearchOpen])
 
-  // Close mobile menu when screen size changes to desktop
+  // Optimized mobile menu handling
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768 && isMobileMenuOpen) {
@@ -325,19 +275,18 @@ export default function DopeTechEcommerce() {
       }
     }
 
-    // Check on initial load as well
     if (typeof window !== 'undefined' && window.innerWidth >= 768) {
       setIsMobileMenuOpen(false)
     }
 
-    window.addEventListener('resize', handleResize)
+    window.addEventListener('resize', handleResize, { passive: true })
     return () => window.removeEventListener('resize', handleResize)
   }, [isMobileMenuOpen])
 
+  // Optimized theme setting
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
-        // Force dark mode
         document.documentElement.classList.add("dark")
         localStorage.setItem("theme", "dark")
       } catch (error) {
@@ -346,21 +295,20 @@ export default function DopeTechEcommerce() {
     }
   }, [])
 
-
-
-  // DopeTech animation restart effect
+  // Optimized animation restart
   useEffect(() => {
     const interval = setInterval(() => {
       setAnimationKey(prev => prev + 1)
-    }, 20000) // Restart animation every 20 seconds
+    }, 20000)
 
     return () => clearInterval(interval)
   }, [])
 
-  // Track category section visibility and show the button only when it's out of view
+  // Optimized category section visibility
   useEffect(() => {
     const el = categorySectionRef.current
     if (!el || typeof window === 'undefined') return
+    
     const observer = new IntersectionObserver(
       ([entry]) => setIsCategoryInView(entry.isIntersecting),
       { root: null, threshold: 0.2 }
@@ -373,12 +321,29 @@ export default function DopeTechEcommerce() {
     setShowBackToCategories(!isCategoryInView)
   }, [isCategoryInView])
 
-  // Cycle through category icons while the button is visible
-  // (moved below categories state declaration to avoid TS order error)
+  // Optimized poster auto-scroll
+  useEffect(() => {
+    if (products.length === 0) return
+    
+    const interval = setInterval(() => {
+      const container = document.querySelector('.flex.overflow-x-auto.scrollbar-hide') as HTMLElement;
+      if (container && !container.classList.contains('user-interacting')) {
+        const productsToShow = products.filter((p: any) => !p.hidden_on_home).slice(0, 6);
+        if (productsToShow.length === 0) return
+        
+        const currentIndex = posterIndex;
+        const nextIndex = (currentIndex + 1) % productsToShow.length;
+        
+        const slideWidth = container.clientWidth;
+        const newScrollLeft = nextIndex * slideWidth;
+        
+        container.scrollTo({ left: newScrollLeft, behavior: 'smooth' });
+        setPosterIndex(nextIndex);
+      }
+    }, 4000)
 
-
-
-
+    return () => clearInterval(interval)
+  }, [posterIndex, products])
 
   const handleCategoryClick = (categoryId: string) => {
     setSelectedCategory(categoryId)
@@ -419,8 +384,6 @@ export default function DopeTechEcommerce() {
     }, 0)
   }
 
-
-
   const handleAddToCartWithTracking = (product: Product) => {
     addToCart(product, 1)
     
@@ -448,7 +411,7 @@ export default function DopeTechEcommerce() {
   const filteredProducts = useMemo(() => {
     return currentProducts.filter(product => {
       // Hide products explicitly flagged to be hidden on home
-      if ((product as any).hiddenOnHome) return false
+      if (product.hidden_on_home) return false
       const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            product.description.toLowerCase().includes(searchQuery.toLowerCase())
       
@@ -463,12 +426,12 @@ export default function DopeTechEcommerce() {
     })
   }, [currentProducts, searchQuery, selectedCategory])
 
-  // Lightweight set of promo products for the top cards (hiddenOnHome excluded)
+  // Lightweight set of promo products for the top cards (hidden_on_home excluded)
   // Always fill to a max of 6 items deterministically (no Math.random for SSR safety)
   // Apply admin-defined ordering if available
   const promoProducts = useMemo(() => {
     const PROMO_CARD_MAX = 6
-    const visible = currentProducts.filter((p) => !(p as any).hiddenOnHome)
+    const visible = currentProducts.filter((p) => !p.hidden_on_home)
     // Reorder by admin preference
     const orderSet = new Set(promoOrder)
     const orderedByAdmin = [
@@ -500,7 +463,7 @@ export default function DopeTechEcommerce() {
   // Desktop-only extra promo grid (up to 6 additional squares, avoid duplicates when possible)
   const promoProductsDesktopExtra = useMemo(() => {
     const EXTRA_MAX = 6
-    const visible = currentProducts.filter((p) => !(p as any).hiddenOnHome)
+    const visible = currentProducts.filter((p) => !p.hidden_on_home)
     const orderSet = new Set(promoOrder)
     const orderedByAdmin = [
       ...promoOrder
@@ -703,7 +666,13 @@ export default function DopeTechEcommerce() {
     { id: "accessory", name: "Accessories", icon: Cable },
   ])
 
-  // Cycle through category icons while the button is visible
+  // Initialize categories from localStorage or use defaults
+  useEffect(() => {
+    const adminCategories = getCategories()
+    setCategories(adminCategories)
+  }, [])
+
+  // Optimized category icon cycling
   useEffect(() => {
     if (!showBackToCategories || categories.length === 0) return
     const id = setInterval(() => {
@@ -711,8 +680,6 @@ export default function DopeTechEcommerce() {
     }, 900)
     return () => clearInterval(id)
   }, [showBackToCategories, categories])
-
-
 
   return (
     <div className="text-white min-h-screen transition-colors duration-100 tap-feedback scrollbar-hide gradient-bg">
@@ -1160,26 +1127,12 @@ export default function DopeTechEcommerce() {
                       target.classList.remove('user-scrolling');
                     }
                   }}
-                  onTouchStart={() => {
-                    const marquee = document.querySelector('.animate-marquee') as HTMLElement;
-                    if (marquee) marquee.style.animationPlayState = 'paused';
-                  }}
-                  onTouchEnd={() => {
-                    const marquee = document.querySelector('.animate-marquee') as HTMLElement;
-                    if (marquee) marquee.style.animationPlayState = 'running';
-                  }}
-                  onMouseDown={() => {
-                    const marquee = document.querySelector('.animate-marquee') as HTMLElement;
-                    if (marquee) marquee.style.animationPlayState = 'paused';
-                  }}
-                  onMouseUp={() => {
-                    const marquee = document.querySelector('.animate-marquee') as HTMLElement;
-                    marquee.style.animationPlayState = 'running';
-                  }}
-                  onMouseLeave={() => {
-                    const marquee = document.querySelector('.animate-marquee') as HTMLElement;
-                    if (marquee) marquee.style.animationPlayState = 'running';
-                  }}
+                  onTouchStart={marqueeControl.handleInteractionStart}
+                  onTouchEnd={() => marqueeControl.handleInteractionEnd(500)}
+                  onMouseDown={marqueeControl.handleInteractionStart}
+                  onMouseUp={() => marqueeControl.handleInteractionEnd(300)}
+                  onMouseEnter={marqueeControl.handleInteractionStart}
+                  onMouseLeave={() => marqueeControl.handleInteractionEnd(500)}
                   onKeyDown={(e) => {
                     const target = e.currentTarget;
                     const scrollAmount = 200;
@@ -1187,21 +1140,17 @@ export default function DopeTechEcommerce() {
                     if (e.key === 'ArrowLeft') {
                       e.preventDefault();
                       target.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-                      const marquee = document.querySelector('.animate-marquee') as HTMLElement;
-                      if (marquee) marquee.style.animationPlayState = 'paused';
-                      setTimeout(() => {
-                        if (marquee) marquee.style.animationPlayState = 'running';
-                      }, 1000);
+                      marqueeControl.handleInteractionStart();
+                      marqueeControl.handleInteractionEnd(1000);
                     } else if (e.key === 'ArrowRight') {
                       e.preventDefault();
                       target.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-                      const marquee = document.querySelector('.animate-marquee') as HTMLElement;
-                      if (marquee) marquee.style.animationPlayState = 'paused';
-                      setTimeout(() => {
-                        if (marquee) marquee.style.animationPlayState = 'running';
-                      }, 1000);
+                      marqueeControl.handleInteractionStart();
+                      marqueeControl.handleInteractionEnd(1000);
                     }
                   }}
+                  onFocus={marqueeControl.handleInteractionStart}
+                  onBlur={() => marqueeControl.handleInteractionEnd(300)}
                   tabIndex={0}
                   role="region"
                   aria-label="Product carousel - use arrow keys or drag to scroll"
@@ -1210,7 +1159,14 @@ export default function DopeTechEcommerce() {
                   <div className="flex animate-marquee space-x-4 sm:space-x-6 md:space-x-8 min-w-max">
                     {/* First set of products */}
                     {products.filter((p: any) => !p.hidden_on_home).map((product, index) => (
-                      <div key={`marquee-first-${product.id}`} className="group relative flex-shrink-0">
+                      <div 
+                        key={`marquee-first-${product.id}`} 
+                        className="group relative flex-shrink-0"
+                        onMouseEnter={marqueeControl.handleInteractionStart}
+                        onMouseLeave={() => marqueeControl.handleInteractionEnd(500)}
+                        onTouchStart={marqueeControl.handleInteractionStart}
+                        onTouchEnd={() => marqueeControl.handleInteractionEnd(500)}
+                      >
                         <div className="relative overflow-hidden rounded-2xl w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 bg-gradient-to-br from-white/5 to-white/10 border border-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
                           <img
                             src={product.image_url}
@@ -1238,7 +1194,14 @@ export default function DopeTechEcommerce() {
                     
                     {/* Duplicate set for seamless loop */}
                     {products.filter((p: any) => !p.hidden_on_home).map((product, index) => (
-                      <div key={`marquee-second-${product.id}`} className="group relative flex-shrink-0">
+                      <div 
+                        key={`marquee-second-${product.id}`} 
+                        className="group relative flex-shrink-0"
+                        onMouseEnter={marqueeControl.handleInteractionStart}
+                        onMouseLeave={() => marqueeControl.handleInteractionEnd(500)}
+                        onTouchStart={marqueeControl.handleInteractionStart}
+                        onTouchEnd={() => marqueeControl.handleInteractionEnd(500)}
+                      >
                         <div className="relative overflow-hidden rounded-2xl w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 bg-gradient-to-br from-white/5 to-white/10 border border-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
                           <img
                             src={product.image_url}
@@ -1274,71 +1237,6 @@ export default function DopeTechEcommerce() {
                 </div>
               </div>
             </div>
-
-            {/* Dope Weekly Picks Section - 2x2 Grid */}
-            <div className="w-full mx-auto mt-8 sm:mt-10 md:mt-12 mb-6 sm:mb-8 md:mb-10 animate-fade-in-up stagger-5">
-              <div className="text-center mb-4 sm:mb-6">
-                <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3">
-                  Dope <span className="text-[#F7DD0F]">Weekly Picks</span>
-                </h2>
-                <p className="text-sm sm:text-base md:text-lg text-gray-400">
-                  This week's featured selections
-                </p>
-              </div>
-              
-              {/* 2x2 Grid Layout - 2x Bigger than Marquee */}
-              <div className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
-                {products.filter((p: any) => !p.hidden_on_home).slice(0, 4).map((product, index) => (
-                  <div key={`weekly-pick-${product.id}`} className="group relative animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
-                    <div 
-                      className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-white/5 to-white/10 border-0 sm:border sm:border-white/10 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-rotate-1 cursor-pointer"
-                      onClick={() => router.push(`/product/${product.id}`)}
-                    >
-                      {/* 2x Bigger than marquee: w-80 h-80 sm:w-96 sm:h-96 md:w-[28rem] md:h-[28rem] lg:w-[32rem] lg:h-[32rem] */}
-                      <div className="w-80 h-80 sm:w-96 sm:h-96 md:w-[28rem] md:h-[28rem] lg:w-[32rem] lg:h-[32rem] mx-auto">
-                        <img
-                          src={product.image_url}
-                          alt={product.name}
-                          className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
-                        />
-                      </div>
-                      
-                      {/* Enhanced Gradient Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
-                      
-                      {/* Product Info Overlay */}
-                      <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 md:p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
-                        <div className="space-y-3 sm:space-y-4">
-                          <h3 className="text-white font-bold text-lg sm:text-xl lg:text-2xl mb-2 line-clamp-2 leading-tight">{product.name}</h3>
-                          <p className="text-[#F7DD0F] font-bold text-xl sm:text-2xl lg:text-3xl mb-3">Rs {product.price}</p>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleAddToCartWithTracking(product)
-                            }}
-                            className="bg-[#F7DD0F] text-black px-4 py-2 sm:px-5 sm:py-3 rounded-xl font-bold hover:bg-[#F7DD0F]/90 transition-all duration-300 hover:shadow-2xl w-full text-sm sm:text-base shadow-lg z-10 relative cursor-pointer"
-                          >
-                            Add to Cart
-                          </button>
-                        </div>
-                      </div>
-                      
-
-                      
-
-                      
-
-                      
-                      {/* Floating Elements */}
-                      <div className="absolute top-3 left-3 sm:top-4 sm:left-4 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200">
-                        <div className="w-3 h-3 bg-[#F7DD0F] rounded-full animate-pulse"></div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Dope Categories Header */}
             <div className="text-center mb-4 sm:mb-6 animate-fade-in-up stagger-4">
               <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3">
@@ -1495,6 +1393,68 @@ export default function DopeTechEcommerce() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Dope Weekly Picks Section - 2x2 Grid */}
+      <section className="pt-8 sm:pt-12 pb-20 sm:pb-24 overflow-hidden relative" style={{ background: 'linear-gradient(135deg, #000000 0%, #1a1a0a 50%, #000000 100%)' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="w-full mx-auto mt-8 sm:mt-10 md:mt-12 mb-6 sm:mb-8 md:mb-10 animate-fade-in-up stagger-5">
+            <div className="text-center mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3">
+                Dope <span className="text-[#F7DD0F]">Weekly Picks</span>
+              </h2>
+              <p className="text-sm sm:text-base md:text-lg text-gray-400">
+                This week's featured selections
+              </p>
+            </div>
+            
+            {/* 2x2 Grid Layout - 2x Bigger than Marquee */}
+            <div className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
+              {products.filter((p: any) => !p.hidden_on_home).slice(0, 4).map((product, index) => (
+                <div key={`weekly-pick-${product.id}`} className="group relative animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                  <div 
+                    className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-white/5 to-white/10 border-0 sm:border sm:border-white/10 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-rotate-1 cursor-pointer"
+                    onClick={() => router.push(`/product/${product.id}`)}
+                  >
+                    {/* 2x Bigger than marquee: w-80 h-80 sm:w-96 sm:h-96 md:w-[28rem] md:h-[28rem] lg:w-[32rem] lg:h-[32rem] */}
+                    <div className="w-80 h-80 sm:w-96 sm:h-96 md:w-[28rem] md:h-[28rem] lg:w-[32rem] lg:h-[32rem] mx-auto">
+                      <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+                      />
+                    </div>
+                    
+                    {/* Enhanced Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
+                    
+                    {/* Product Info Overlay */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5 md:p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                      <div className="space-y-3 sm:space-y-4">
+                        <h3 className="text-white font-bold text-lg sm:text-xl lg:text-2xl mb-2 line-clamp-2 leading-tight">{product.name}</h3>
+                        <p className="text-[#F7DD0F] font-bold text-xl sm:text-2xl lg:text-3xl mb-3">Rs {product.price}</p>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleAddToCartWithTracking(product)
+                          }}
+                          className="bg-[#F7DD0F] text-black px-4 py-2 sm:px-5 sm:py-3 rounded-xl font-bold hover:bg-[#F7DD0F]/90 transition-all duration-300 hover:shadow-2xl w-full text-sm sm:text-base shadow-lg z-10 relative cursor-pointer"
+                        >
+                          Add to Cart
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Floating Elements */}
+                    <div className="absolute top-3 left-3 sm:top-4 sm:left-4 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-200">
+                      <div className="w-3 h-3 bg-[#F7DD0F] rounded-full animate-pulse"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>

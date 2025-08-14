@@ -1261,6 +1261,34 @@ body *::-webkit-scrollbar-thumb:hover {
   animation-play-state: paused;
 }
 
+/* Enhanced marquee pause/resume for better user interaction */
+.animate-marquee {
+  transition: animation-play-state 0.2s ease;
+}
+
+/* Pause marquee when user is interacting with any child element */
+.animate-marquee:hover,
+.animate-marquee:focus-within,
+.animate-marquee .group:hover ~ .animate-marquee {
+  animation-play-state: paused !important;
+}
+
+/* Resume marquee when interaction ends */
+.animate-marquee:not(:hover):not(:focus-within) {
+  animation-play-state: running;
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .animate-marquee {
+    animation-play-state: paused;
+  }
+  
+  .animate-marquee:active {
+    animation-play-state: paused;
+  }
+}
+
 /* Enhanced frosted glass effect */
 .frosted-glass-enhanced {
   background: rgba(255, 255, 255, 0.1);

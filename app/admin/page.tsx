@@ -523,8 +523,11 @@ export default function AdminPage() {
                       <label className="block text-sm font-medium mb-2 text-white">Price (Rs)</label>
                       <input
                         type="number"
-                        value={newProduct.price}
-                        onChange={(e) => setNewProduct({...newProduct, price: parseFloat(e.target.value)})}
+                        value={newProduct.price || ''}
+                        onChange={(e) => {
+                          const value = e.target.value === '' ? 0 : parseFloat(e.target.value)
+                          setNewProduct({...newProduct, price: isNaN(value) ? 0 : value})
+                        }}
                         className="w-full px-3 py-2 bg-black/50 border border-[#F7DD0F]/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F] text-white placeholder-gray-400"
                       />
                     </div>
@@ -533,8 +536,11 @@ export default function AdminPage() {
                       <label className="block text-sm font-medium mb-2 text-white">Original Price (Rs)</label>
                       <input
                         type="number"
-                        value={newProduct.original_price}
-                        onChange={(e) => setNewProduct({...newProduct, original_price: parseFloat(e.target.value)})}
+                        value={newProduct.original_price || ''}
+                        onChange={(e) => {
+                          const value = e.target.value === '' ? 0 : parseFloat(e.target.value)
+                          setNewProduct({...newProduct, original_price: isNaN(value) ? 0 : value})
+                        }}
                         className="w-full px-3 py-2 bg-black/50 border border-[#F7DD0F]/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F] text-white placeholder-gray-400"
                       />
                     </div>
@@ -607,8 +613,11 @@ export default function AdminPage() {
                         min="0"
                         max="5"
                         step="0.1"
-                        value={newProduct.rating}
-                        onChange={(e) => setNewProduct({...newProduct, rating: parseFloat(e.target.value)})}
+                        value={newProduct.rating || ''}
+                        onChange={(e) => {
+                          const value = e.target.value === '' ? 0 : parseFloat(e.target.value)
+                          setNewProduct({...newProduct, rating: isNaN(value) ? 0 : value})
+                        }}
                         className="w-full px-3 py-2 bg-black/50 border border-[#F7DD0F]/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F] text-white placeholder-gray-400"
                       />
                     </div>
