@@ -1,0 +1,5 @@
+[33m350ee39[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix removeChild DOM errors: Add proper element existence checks and fallback handling
+[33me1457b4[m Restore from backup and fix build issues: Remove standalone output causing Windows symlink errors
+[33mcba4109[m Fix Netlify build: Simplify build process and fix asset copying issues
+[33md57491d[m Fix Netlify deployment: update Node.js to 20.18.0 for Supabase compatibility and fix DOM manipulation errors
+[33m50987b1[m Fix UI issues: remove video controls, fix CartItem type conflicts, update image references to image_url
