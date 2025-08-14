@@ -20,11 +20,11 @@ const nextConfig = {
     loader: 'default',
     path: '',
   },
-  // Configure build behavior
+  // Ensure all routes are pre-rendered
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
     optimizeCss: true,
-    // Prevent API routes from being prerendered
+    // Ensure all pages are statically generated
     workerThreads: false,
     cpus: 1,
     turbo: {
@@ -95,6 +95,7 @@ const nextConfig = {
     
     return config;
   },
+
 }
 
 export default nextConfig

@@ -50,6 +50,16 @@ const nextConfig = {
   reactStrictMode: true,
   // Asset optimization
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
+  // Configure for App Router and disable API route prerendering
+  output: 'standalone',
+  trailingSlash: false,
+  // Disable prerendering for API routes
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    optimizeCss: true,
+    workerThreads: false,
+    cpus: 1,
+  },
   // Bundle analyzer
   ...(process.env.ANALYZE === 'true' && {
     webpack: (config) => {
@@ -95,6 +105,7 @@ const nextConfig = {
     
     return config;
   },
+
 }
 
 export default nextConfig
