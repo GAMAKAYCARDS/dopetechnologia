@@ -110,17 +110,22 @@ export default function DopeTechEcommerce() {
         
         // Add timeout to prevent infinite loading
         const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Request timeout')), 10000) // 10 second timeout
+          setTimeout(() => reject(new Error('Request timeout')), 5000) // Reduced to 5 second timeout
         })
         
         const productsPromise = getProducts()
         const supabaseProducts = await Promise.race([productsPromise, timeoutPromise]) as Product[]
         
         console.log('📦 Products fetched:', supabaseProducts.length)
-        console.log('🎯 First product:', supabaseProducts[0])
         
-        console.log('✅ Setting products:', supabaseProducts?.length || 0, 'products')
-        setProducts(supabaseProducts || [])
+        if (supabaseProducts && supabaseProducts.length > 0) {
+          console.log('✅ Setting products:', supabaseProducts.length, 'products')
+          setProducts(supabaseProducts)
+        } else {
+          console.log('⚠️ No products received, using empty array')
+          setProducts([])
+        }
+        
         setIsLoading(false)
         
         // Clear the fallback timeout since we successfully fetched products
@@ -131,7 +136,6 @@ export default function DopeTechEcommerce() {
         }
       } catch (error) {
         console.error('❌ Error fetching products:', error)
-        // Set empty products array and stop loading even if there's an error
         console.log('⚠️ Setting empty products due to error')
         setProducts([])
         setIsLoading(false)
@@ -142,9 +146,11 @@ export default function DopeTechEcommerce() {
     fallbackTimeout = setTimeout(() => {
       console.warn('⚠️ Fallback timeout reached - clearing loading state')
       setIsLoading(false)
-      // Don't clear products if they're already loaded
-      // Only clear if we're still loading and have no products
-    }, 15000) // 15 second fallback
+      // Ensure we have an empty products array if nothing loaded
+      if (products.length === 0) {
+        setProducts([])
+      }
+    }, 8000) // Reduced to 8 second fallback
 
     fetchProducts()
 

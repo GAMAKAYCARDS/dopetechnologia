@@ -19,22 +19,31 @@ export function useAssets() {
       setLoading(true)
       setError(null)
 
-      // Load logo and video URLs
-      const [logo, video] = await Promise.all([
+      // Load logo and video URLs with timeout
+      const [logo, video] = await Promise.allSettled([
         getLogoUrl(),
         getVideoUrl()
       ])
 
-      setLogoUrl(logo)
-      setVideoUrl(video)
+      // Use results or fallbacks
+      setLogoUrl(logo.status === 'fulfilled' ? logo.value : '/logo/dopelogo.svg')
+      setVideoUrl(video.status === 'fulfilled' ? video.value : '/video/footervid.mp4')
 
-      // Load all assets list
-      const allAssets = await listAssets()
-      setAssets(allAssets)
+      // Load all assets list (non-blocking)
+      try {
+        const allAssets = await listAssets()
+        setAssets(allAssets)
+      } catch (err) {
+        console.error('Error loading assets list:', err)
+        // Don't fail the entire load for this
+      }
 
     } catch (err) {
       console.error('Error loading assets:', err)
       setError('Failed to load assets')
+      // Ensure we have fallbacks
+      setLogoUrl('/logo/dopelogo.svg')
+      setVideoUrl('/video/footervid.mp4')
     } finally {
       setLoading(false)
     }
@@ -103,15 +112,18 @@ export function useAssets() {
 // Hook for getting just the logo URL
 export function useLogoUrl() {
   const [logoUrl, setLogoUrl] = useState<string>('/logo/dopelogo.svg')
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false) // Start with false since we have fallback
 
   useEffect(() => {
     const loadLogo = async () => {
       try {
+        setLoading(true)
         const url = await getLogoUrl()
         setLogoUrl(url)
       } catch (err) {
         console.error('Error loading logo:', err)
+        // Keep fallback
+        setLogoUrl('/logo/dopelogo.svg')
       } finally {
         setLoading(false)
       }
@@ -126,15 +138,18 @@ export function useLogoUrl() {
 // Hook for getting just the video URL
 export function useVideoUrl() {
   const [videoUrl, setVideoUrl] = useState<string>('/video/footervid.mp4')
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false) // Start with false since we have fallback
 
   useEffect(() => {
     const loadVideo = async () => {
       try {
+        setLoading(true)
         const url = await getVideoUrl()
         setVideoUrl(url)
       } catch (err) {
         console.error('Error loading video:', err)
+        // Keep fallback
+        setVideoUrl('/video/footervid.mp4')
       } finally {
         setLoading(false)
       }
