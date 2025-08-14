@@ -48,7 +48,7 @@ export default function SEOOptimizer({
       document.head.appendChild(script)
 
       return () => {
-        if (script && script.parentNode) {
+        if (script && script.parentNode && script.parentNode.contains(script)) {
           try {
             document.head.removeChild(script)
           } catch (error) {

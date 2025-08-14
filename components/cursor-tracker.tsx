@@ -74,7 +74,7 @@ export default function CursorTracker() {
           el.removeEventListener("mouseleave", handleMouseLeave)
         })
         // Safe removal of cursor element
-        if (cursor && cursor.parentNode) {
+        if (cursor && cursor.parentNode && cursor.parentNode.contains(cursor)) {
           try {
             cursor.parentNode.removeChild(cursor)
           } catch (error) {

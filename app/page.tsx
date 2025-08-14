@@ -1514,7 +1514,7 @@ export default function DopeTechEcommerce() {
                 // Fallback to image if video fails
                 const videoElement = e.target as HTMLVideoElement;
                 const container = videoElement.parentElement;
-                if (container) {
+                if (container && videoElement.parentNode === container) {
                   try {
                     // Create a new image element instead of using innerHTML
                     const img = document.createElement('img');
@@ -1526,6 +1526,16 @@ export default function DopeTechEcommerce() {
                     container.replaceChild(img, videoElement);
                   } catch (error) {
                     console.warn('Error replacing video with fallback image:', error);
+                    // If replaceChild fails, try to append the image instead
+                    try {
+                      const img = document.createElement('img');
+                      img.src = '/placeholder.jpg';
+                      img.alt = 'DopeTech Video';
+                      img.className = 'w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 shadow-xl object-cover object-center';
+                      container.appendChild(img);
+                    } catch (appendError) {
+                      console.warn('Failed to append fallback image:', appendError);
+                    }
                   }
                 }
               }}
