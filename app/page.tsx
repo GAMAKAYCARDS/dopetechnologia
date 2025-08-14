@@ -48,7 +48,8 @@ export default function DopeTechEcommerce() {
     cartOpen, 
     setCartOpen,
     checkoutModalOpen,
-    setCheckoutModalOpen
+    setCheckoutModalOpen,
+    clearCart
   } = useCart()
 
   // Get products from Supabase (no local storage fallback)
@@ -431,7 +432,7 @@ export default function DopeTechEcommerce() {
   }
 
   const handleCartReset = () => {
-    setCart([])
+    clearCart()
     setCheckoutModalOpen(false)
   }
 
@@ -1519,7 +1520,6 @@ export default function DopeTechEcommerce() {
               }}
               onLoadStart={() => console.log('Video loading started')}
               onCanPlay={() => console.log('Video can play')}
-              controls
             />
           </div>
         </div>
@@ -1561,7 +1561,7 @@ export default function DopeTechEcommerce() {
                     {cart.map((item) => (
                       <div key={item.id} className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-gray-50 dark:bg-[#2a2a2a] rounded-lg">
                         <img
-                          src={item.image}
+                          src={item.image_url}
                           alt={item.name}
                           className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg flex-shrink-0"
                         />
@@ -1625,7 +1625,7 @@ export default function DopeTechEcommerce() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-3 mb-6 md:mb-0">
-                              <img src="/logo/dopelogo.svg" alt="DopeTech" className="w-10 h-10 sm:w-12 sm:h-12 logo-adaptive" />
+                              <img src="/logo/simple-logo.svg" alt="DopeTech" className="w-10 h-10 sm:w-12 sm:h-12 logo-adaptive" />
               <span className="text-xs sm:text-sm text-white jakarta-light">© 2025 DopeTech Nepal. All rights reserved.</span>
             </div>
 

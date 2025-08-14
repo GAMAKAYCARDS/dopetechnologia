@@ -98,6 +98,10 @@ tmp/
 temp/
 
 # Editor directories and files
+
+# Generated static assets (copied during build)
+/logo
+/video
 .vscode/*
 !.vscode/extensions.json
 .idea

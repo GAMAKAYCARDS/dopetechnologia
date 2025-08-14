@@ -9,7 +9,7 @@ interface CartItem {
   name: string
   price: number
   quantity: number
-  image: string
+  image_url: string
 }
 
 interface CheckoutModalProps {
@@ -561,7 +561,7 @@ export default function CheckoutModal({ isOpen, onClose, cart, total }: Checkout
                 <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
                   {cart.map((item) => (
                     <div key={item.id} className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg border border-white/10 backdrop-blur-sm">
-                      <img src={item.image} alt={item.name} className="w-10 h-10 md:w-12 md:h-12 object-cover rounded-lg" />
+                      <img src={item.image_url} alt={item.name} className="w-10 h-10 md:w-12 md:h-12 object-cover rounded-lg" />
                       <div className="flex-1 min-w-0">
                         <h3 className="font-medium text-white text-sm md:text-base truncate">{item.name}</h3>
                         <p className="text-sm text-gray-300">{item.quantity}x</p>

@@ -9,7 +9,7 @@ interface CartItem {
   name: string
   price: number
   quantity: number
-  image: string
+  image_url: string
 }
 
 interface CheckoutModalProps {
@@ -588,7 +588,7 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
                   {cart.map((item) => (
                     <div key={item.id} className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
                       <img
-                        src={item.image}
+                        src={item.image_url}
                         alt={item.name}
                         className="w-12 h-12 object-cover rounded-lg flex-shrink-0"
                       />
