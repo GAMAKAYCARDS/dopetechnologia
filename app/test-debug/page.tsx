@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { getProducts } from '@/lib/products-data'
 import { getLogoUrl, getVideoUrl } from '@/lib/assets'
-import { supabase } from '@/lib/supabase'
+import { supabase, debugSupabaseConfig } from '@/lib/supabase'
 
 export default function TestDebug() {
   const [status, setStatus] = useState<any>({})
@@ -12,6 +12,9 @@ export default function TestDebug() {
   useEffect(() => {
     const testConnections = async () => {
       const results: any = {}
+
+      // Debug Supabase configuration
+      debugSupabaseConfig()
 
       // Test Supabase connection
       try {
@@ -55,6 +58,15 @@ export default function TestDebug() {
         }
       } catch (err) {
         results.localAssets = { error: err }
+      }
+
+      // Enhanced environment variable check
+      results.environment = {
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Set' : 'Not Set (using fallback)',
+        supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Set' : 'Not Set (using fallback)',
+        serviceKey: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'Set' : 'Not Set (using fallback)',
+        nodeEnv: process.env.NODE_ENV || 'Not Set',
+        isProduction: process.env.NODE_ENV === 'production'
       }
 
       setStatus(results)
@@ -109,12 +121,22 @@ export default function TestDebug() {
         <div className="border border-gray-700 p-4 rounded">
           <h2 className="text-xl font-semibold mb-2">Environment Variables</h2>
           <pre className="bg-gray-800 p-3 rounded text-sm overflow-auto">
-            {JSON.stringify({
-              supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Set' : 'Not Set',
-              supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Set' : 'Not Set',
-              serviceKey: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'Set' : 'Not Set'
-            }, null, 2)}
+            {JSON.stringify(status.environment, null, 2)}
           </pre>
+        </div>
+
+        <div className="border border-yellow-500 p-4 rounded bg-yellow-900/20">
+          <h2 className="text-xl font-semibold mb-2 text-yellow-400">Netlify Fix Instructions</h2>
+          <div className="text-sm space-y-2">
+            <p>If environment variables show "Not Set", you need to add them in Netlify dashboard:</p>
+            <ol className="list-decimal list-inside space-y-1 ml-4">
+              <li>Go to Netlify Dashboard → Site Settings → Environment Variables</li>
+              <li>Add: <code className="bg-gray-800 px-2 py-1 rounded">NEXT_PUBLIC_SUPABASE_URL</code></li>
+              <li>Add: <code className="bg-gray-800 px-2 py-1 rounded">NEXT_PUBLIC_SUPABASE_ANON_KEY</code></li>
+              <li>Add: <code className="bg-gray-800 px-2 py-1 rounded">SUPABASE_SERVICE_ROLE_KEY</code></li>
+              <li>Trigger a new deployment</li>
+            </ol>
+          </div>
         </div>
       </div>
     </div>
