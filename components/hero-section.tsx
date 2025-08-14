@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { Search, ShoppingBag, Menu, Instagram } from 'lucide-react'
 import { useState } from 'react'
+import { useLogoUrl } from "@/hooks/use-assets"
 
 interface HeroSectionProps {
   cartCount: number
@@ -12,6 +13,7 @@ interface HeroSectionProps {
 export default function HeroSection({ cartCount, onCartClick }: HeroSectionProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const { logoUrl, loading: logoLoading } = useLogoUrl()
 
   return (
     <section className="relative min-h-screen bg-gradient-to-br from-black via-gray-900 to-black flex items-center justify-center overflow-hidden">
@@ -27,7 +29,7 @@ export default function HeroSection({ cartCount, onCartClick }: HeroSectionProps
           {/* Logo */}
                      <div className="flex items-center space-x-2 md:space-x-3">
             <Image
-                             src="/logo/dopelogo.svg"
+              src={logoLoading ? "/logo/dopelogo.svg" : logoUrl}
               alt="DopeTech"
               width={320}
               height={320}

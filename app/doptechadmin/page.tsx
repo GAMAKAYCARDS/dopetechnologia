@@ -20,10 +20,15 @@ import {
   Image as ImageIcon,
   CheckCircle,
   Lock,
-  ArrowLeft
+  ArrowLeft,
+  Video,
+  FileImage,
+  RefreshCw
 } from "lucide-react"
 import { getProducts, type Product } from "@/lib/products-data"
 import { supabase } from "@/lib/supabase"
+import { useAssets } from '@/hooks/use-assets'
+import { AssetUploader } from '@/components/asset-uploader'
 
 interface AdminProduct extends Product {
   isNew?: boolean
@@ -33,12 +38,24 @@ interface AdminProduct extends Product {
 export default function DopeTechAdmin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [password, setPassword] = useState("")
+  const [activeTab, setActiveTab] = useState("products")
   const [products, setProducts] = useState<AdminProduct[]>([])
   const [isAddingProduct, setIsAddingProduct] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [isLoading, setIsLoading] = useState(true)
+
+  // Asset management state
+  const { 
+    logoUrl, 
+    videoUrl, 
+    assets, 
+    loading: assetsLoading, 
+    error: assetsError, 
+    deleteAsset, 
+    refreshAssets 
+  } = useAssets()
 
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -340,43 +357,79 @@ export default function DopeTechAdmin() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Controls */}
-        <div className="flex flex-col sm:flex-row items-center justify-between mb-8 space-y-4 sm:space-y-0">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => setIsAddingProduct(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-[#F7DD0F] text-black rounded-lg hover:bg-[#F7DD0F]/90 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add Product</span>
-            </button>
-          </div>
-          
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F] text-white"
-              />
-            </div>
-            
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F] text-white"
-            >
-              {categories.map(category => (
-                <option key={category} value={category}>
-                  {category === "all" ? "All Categories" : category}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* Tab Navigation */}
+        <div className="flex items-center space-x-1 bg-white/5 rounded-lg p-1 mb-8">
+          <button
+            onClick={() => setActiveTab("products")}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
+              activeTab === "products"
+                ? "bg-[#F7DD0F] text-black"
+                : "text-gray-400 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            <Package className="w-4 h-4" />
+            <span>Products</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("assets")}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
+              activeTab === "assets"
+                ? "bg-[#F7DD0F] text-black"
+                : "text-gray-400 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            <FileImage className="w-4 h-4" />
+            <span>Assets</span>
+          </button>
         </div>
+
+        {/* Error Display */}
+        {assetsError && (
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
+            <p className="text-red-400">{assetsError}</p>
+          </div>
+        )}
+
+        {/* Products Tab */}
+        {activeTab === "products" && (
+          <>
+            {/* Controls */}
+            <div className="flex flex-col sm:flex-row items-center justify-between mb-8 space-y-4 sm:space-y-0">
+              <div className="flex items-center space-x-4">
+                <button
+                  onClick={() => setIsAddingProduct(true)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-[#F7DD0F] text-black rounded-lg hover:bg-[#F7DD0F]/90 transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add Product</span>
+                </button>
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F] text-white"
+                  />
+                </div>
+                
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F] text-white"
+                >
+                  {categories.map(category => (
+                    <option key={category} value={category}>
+                      {category === "all" ? "All Categories" : category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
         {/* Add Product Modal */}
         {isAddingProduct && (
@@ -1045,6 +1098,130 @@ export default function DopeTechAdmin() {
                 </table>
               </div>
             </div>
+          </div>
+        )}
+          </>
+        )}
+
+        {/* Assets Tab */}
+        {activeTab === "assets" && (
+          <div className="space-y-8">
+            {/* Header Controls */}
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-[#F7DD0F]">Asset Management</h2>
+              <button
+                onClick={refreshAssets}
+                disabled={assetsLoading}
+                className="flex items-center space-x-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors"
+              >
+                <RefreshCw className={`w-4 h-4 ${assetsLoading ? 'animate-spin' : ''}`} />
+                <span>Refresh</span>
+              </button>
+            </div>
+
+            {/* Current Assets Preview */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Logo Preview */}
+              <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+                <div className="flex items-center space-x-2 mb-4">
+                  <ImageIcon className="w-5 h-5 text-[#F7DD0F]" />
+                  <h3 className="text-lg font-semibold">Current Logo</h3>
+                </div>
+                {assetsLoading ? (
+                  <div className="h-32 bg-gray-800 rounded-lg animate-pulse flex items-center justify-center">
+                    <span className="text-gray-400">Loading...</span>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="h-32 bg-gray-800 rounded-lg flex items-center justify-center p-4">
+                      <img
+                        src={logoUrl}
+                        alt="Current Logo"
+                        className="max-h-full max-w-full object-contain"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement
+                          target.src = '/logo/dopelogo.svg'
+                        }}
+                      />
+                    </div>
+                    <p className="text-sm text-gray-400 break-all">{logoUrl}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Video Preview */}
+              <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+                <div className="flex items-center space-x-2 mb-4">
+                  <Video className="w-5 h-5 text-[#F7DD0F]" />
+                  <h3 className="text-lg font-semibold">Current Video</h3>
+                </div>
+                {assetsLoading ? (
+                  <div className="h-32 bg-gray-800 rounded-lg animate-pulse flex items-center justify-center">
+                    <span className="text-gray-400">Loading...</span>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="h-32 bg-gray-800 rounded-lg flex items-center justify-center p-4">
+                      <video
+                        src={videoUrl}
+                        className="max-h-full max-w-full object-contain"
+                        muted
+                        loop
+                        onError={(e) => {
+                          const target = e.target as HTMLVideoElement
+                          target.src = '/video/footervid.mp4'
+                        }}
+                      />
+                    </div>
+                    <p className="text-sm text-gray-400 break-all">{videoUrl}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Asset Upload */}
+            <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+              <div className="flex items-center space-x-2 mb-4">
+                <Upload className="w-5 h-5 text-[#F7DD0F]" />
+                <h3 className="text-lg font-semibold">Upload New Assets</h3>
+              </div>
+              <AssetUploader />
+            </div>
+
+            {/* Asset List */}
+            {assets.length > 0 && (
+              <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+                <h3 className="text-lg font-semibold mb-4">Uploaded Assets</h3>
+                <div className="space-y-3">
+                  {assets.map((asset, index) => (
+                    <div
+                      key={asset.id || `${asset.name}-${asset.type}-${index}`}
+                      className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg"
+                    >
+                      <div className="flex items-center space-x-3">
+                        {asset.type === 'logo' ? (
+                          <ImageIcon className="w-4 h-4 text-blue-400" />
+                        ) : asset.type === 'video' ? (
+                          <Video className="w-4 h-4 text-green-400" />
+                        ) : (
+                          <ImageIcon className="w-4 h-4 text-purple-400" />
+                        )}
+                        <div>
+                          <p className="text-white font-medium">{asset.name}</p>
+                          <p className="text-xs text-gray-400">{asset.type}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => deleteAsset(asset.name)}
+                        className="p-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors text-red-400"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import { X, Upload, CheckCircle, AlertCircle, CreditCard, MessageCircle, Truck, Package, Lock, ChevronDown, ChevronUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useLogoUrl } from "@/hooks/use-assets"
 
 interface CartItem {
   id: number
@@ -22,6 +23,7 @@ interface CheckoutModalProps {
 export default function CheckoutModal({ isOpen, onClose, cart, total }: CheckoutModalProps) {
   // Allow exit animations by keeping component mounted briefly after close
   const [shouldRender, setShouldRender] = useState(isOpen)
+  const { logoUrl, loading: logoLoading } = useLogoUrl()
   const [isClosing, setIsClosing] = useState(false)
   const [activeTab, setActiveTab] = useState<'customer-info' | 'payment' | 'receipt'>('customer-info')
   const [receiptFile, setReceiptFile] = useState<File | null>(null)
@@ -252,7 +254,7 @@ export default function CheckoutModal({ isOpen, onClose, cart, total }: Checkout
         {/* Header */}
         <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/20 bg-white/10 backdrop-blur-sm animate-slide-in-down">
           <div className="flex items-center space-x-3 md:space-x-4">
-                            <img src="/logo/dopelogo.svg" alt="DopeTech" className="h-6 md:h-8 w-auto" />
+                            <img src={logoLoading ? "/logo/dopelogo.svg" : logoUrl} alt="DopeTech" className="h-6 md:h-8 w-auto" />
             <span className="text-base md:text-lg font-semibold text-[#F7DD0F]">{activeTab === 'payment' ? 'Payment' : activeTab === 'receipt' ? 'Order confirmed' : 'Checkout'}</span>
           </div>
           <button

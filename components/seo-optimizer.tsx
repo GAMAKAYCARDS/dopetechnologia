@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import Head from "next/head"
+import { useLogoUrl } from "@/hooks/use-assets"
 
 interface SEOOptimizerProps {
   title?: string
@@ -17,11 +18,12 @@ export default function SEOOptimizer({
   title = "DopeTech Nepal - Premium Tech Gear",
   description = "Premium tech gear from DopeTech Nepal. Mechanical keyboards, gaming mice, wireless headphones, and more. Your setup, perfected.",
   keywords = "tech gear, mechanical keyboard, gaming mouse, wireless headphones, Nepal, DopeTech, gaming peripherals, RGB keyboard, wireless mouse",
-        image = "/logo/dopelogo.svg",
   url = "https://dopetech-nepal.com",
   type = "website",
   structuredData
 }: SEOOptimizerProps) {
+  const { logoUrl, loading: logoLoading } = useLogoUrl()
+  const image = logoLoading ? "/logo/dopelogo.svg" : logoUrl
   useEffect(() => {
     // Update page title dynamically
     if (title) {
@@ -97,8 +99,8 @@ export default function SEOOptimizer({
       <link rel="preload" href={image} as="image" />
       
       {/* Favicon */}
-              <link rel="icon" href="/logo/dopelogo.svg" />
-        <link rel="apple-touch-icon" href="/logo/dopelogo.svg" />
+              <link rel="icon" href={image} />
+        <link rel="apple-touch-icon" href={image} />
     </Head>
   )
 }

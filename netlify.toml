@@ -9,6 +9,10 @@
   NODE_VERSION = "20.18.0"
   NPM_FLAGS = "--legacy-peer-deps"
 
+# Environment variables for production
+[context.production.environment]
+  NODE_ENV = "production"
+
 # Headers for better performance
 [[headers]]
   for = "/*"
@@ -44,5 +48,12 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
     Access-Control-Allow-Origin = "*"
+
+# Redirects for SPA routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  conditions = {Role = ["admin"]}
 
  

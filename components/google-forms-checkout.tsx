@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { useLogoUrl } from "@/hooks/use-assets"
 import { X, Truck, Lock, CheckCircle, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -23,6 +24,7 @@ interface CheckoutModalProps {
 export default function GoogleFormsCheckout({ isOpen, onClose, cart, total, onCartReset }: CheckoutModalProps) {
   const [shouldRender, setShouldRender] = useState(isOpen)
   const [isClosing, setIsClosing] = useState(false)
+  const { logoUrl, loading: logoLoading } = useLogoUrl()
   const [customerInfo, setCustomerInfo] = useState({
     fullName: '',
     email: '',
@@ -353,7 +355,7 @@ export default function GoogleFormsCheckout({ isOpen, onClose, cart, total, onCa
         {/* Header */}
         <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/20 bg-white/10 backdrop-blur-sm">
           <div className="flex items-center space-x-3 md:space-x-4">
-                            <img src="/logo/dopelogo.svg" alt="DopeTech" className="h-6 md:h-8 w-auto" />
+                            <img src={logoLoading ? "/logo/dopelogo.svg" : logoUrl} alt="DopeTech" className="h-6 md:h-8 w-auto" />
             <span className="text-base md:text-lg font-semibold text-[#F7DD0F]">
               {currentStep === 'customer-info' ? 'Checkout' : 'Payment'}
             </span>

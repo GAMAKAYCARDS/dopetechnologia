@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef, useMemo, useCallback } from "react"
+import { useLogoUrl, useVideoUrl } from "@/hooks/use-assets"
 import { useRouter } from "next/navigation"
 import {
   Headphones,
@@ -36,6 +37,8 @@ import { useCart } from "@/contexts/cart-context"
 
 export default function DopeTechEcommerce() {
   const router = useRouter()
+  const { logoUrl, loading: logoLoading } = useLogoUrl()
+  const { videoUrl, loading: videoLoading } = useVideoUrl()
   const [scrollY, setScrollY] = useState(0)
   const [products, setProducts] = useState<Product[]>([])
   const { 
@@ -731,7 +734,11 @@ export default function DopeTechEcommerce() {
           <nav className="flex items-center justify-between h-auto min-h-16">
             {/* Left Side - Logo */}
             <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3 min-w-0 flex-1 pt-1">
-                              <img src="/logo/simple-logo.svg" alt="DopeTech" className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 logo-adaptive flex-shrink-0 origin-left scale-[1.3]" />
+                              <img 
+                  src={logoLoading ? "/logo/simple-logo.svg" : logoUrl} 
+                  alt="DopeTech" 
+                  className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 logo-adaptive flex-shrink-0 origin-left scale-[1.3]" 
+                />
               
               {/* Tagline - Mobile: Headline Only, Desktop: Both */}
               <div className="ml-2 md:ml-3">
@@ -1502,7 +1509,7 @@ export default function DopeTechEcommerce() {
           {/* Video Container */}
           <div className="w-full mx-auto animate-fade-in-up borderless-glow cv-auto rounded-2xl overflow-hidden ring-1 ring-white/10">
             <video
-              src="/video/footervid.mp4"
+              src={videoLoading ? "/video/footervid.mp4" : videoUrl}
               className="w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 shadow-xl object-cover object-center"
               autoPlay
               loop
@@ -1646,7 +1653,11 @@ export default function DopeTechEcommerce() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-3 mb-6 md:mb-0">
-                              <img src="/logo/simple-logo.svg" alt="DopeTech" className="w-10 h-10 sm:w-12 sm:h-12 logo-adaptive" />
+                              <img 
+                  src={logoLoading ? "/logo/simple-logo.svg" : logoUrl} 
+                  alt="DopeTech" 
+                  className="w-10 h-10 sm:w-12 sm:h-12 logo-adaptive" 
+                />
               <span className="text-xs sm:text-sm text-white jakarta-light">© 2025 DopeTech Nepal. All rights reserved.</span>
             </div>
 
