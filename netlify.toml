@@ -1,6 +1,7 @@
 [build]
   command = "pnpm build"
   publish = ".next"
+  functions = ".netlify/functions"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
@@ -52,4 +53,17 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
     Access-Control-Allow-Origin = "*"
+
+[[headers]]
+  for = "/payment/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Access-Control-Allow-Origin = "*"
+
+# Redirects for static assets
+[[redirects]]
+  from = "/payment/*"
+  to = "/payment/:splat"
+  status = 200
+  force = true
 

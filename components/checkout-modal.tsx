@@ -710,7 +710,22 @@ export default function CheckoutModal({ isOpen, onClose, cart, total }: Checkout
                 <h3 className="text-white font-semibold text-lg md:text-xl mb-3">Scan to pay</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-center">
                   <div className="bg-black/40 rounded-xl p-2 md:p-3 border border-white/10 flex items-center justify-center">
-                    <img src="/payment/paymentQR.svg" alt="Payment QR" className="w-full h-auto max-w-[200px] md:max-w-[280px] max-h-[400px] md:max-h-[500px]" />
+                    <img 
+                      src="/payment/paymentQR.svg" 
+                      alt="Payment QR" 
+                      className="w-full h-auto max-w-[200px] md:max-w-[280px] max-h-[400px] md:max-h-[500px]"
+                      onError={(e) => {
+                        console.error('Failed to load QR code:', e);
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        // Show fallback text
+                        const fallback = target.nextElementSibling;
+                        if (fallback) fallback.classList.remove('hidden');
+                      }}
+                    />
+                    <div className="hidden w-full h-full bg-gray-200 rounded flex items-center justify-center">
+                      <span className="text-gray-500 text-sm">QR Code loading failed. Please refresh the page.</span>
+                    </div>
                   </div>
                   <div>
                     <div className="text-gray-300 text-sm mb-2">Amount</div>
