@@ -5,6 +5,8 @@ import { useLogoUrl, useVideoUrl } from "@/hooks/use-assets"
 
 import { useRouter } from "next/navigation"
 import { SlidingCardCarousel } from "@/components/sliding-card-carousel"
+import { EnhancedHeader } from "@/components/enhanced-header"
+import { EnhancedFooter } from "@/components/enhanced-footer"
 import { useHeroCarousel } from "@/hooks/use-hero-carousel"
 import { PageTransition, useFluidNavigation, useScrollAnimation, useSmoothScroll } from "@/components/page-transition"
 import {
@@ -29,7 +31,6 @@ import {
 } from "lucide-react"
 // Removed CursorTracker (opt-in effect)
 import LazyAIChat from "@/components/lazy-ai-chat"
-import SEOOptimizer, { defaultStructuredData } from "@/components/seo-optimizer"
 import SupabaseCheckout from "@/components/supabase-checkout"
 import { getProducts, getDopePicks, getWeeklyPicks, type Product } from "@/lib/products-data"
 import { useCart } from "@/contexts/cart-context"
@@ -37,6 +38,8 @@ import { useCart } from "@/contexts/cart-context"
 // Product type is now imported from lib/products-data
 
 export default function DopeTechEcommerce() {
+  console.log('🚀 DopeTechEcommerce component rendering...')
+  
   const router = useRouter()
   const { logoUrl, loading: logoLoading } = useLogoUrl()
   const { videoUrl, loading: videoLoading } = useVideoUrl()
@@ -44,6 +47,16 @@ export default function DopeTechEcommerce() {
   const [products, setProducts] = useState<Product[]>([])
   const [dopePicks, setDopePicks] = useState<Product[]>([])
   const [weeklyPicks, setWeeklyPicks] = useState<Product[]>([])
+  
+  console.log('📊 State initialized:', { 
+    logoUrl, 
+    logoLoading, 
+    videoUrl, 
+    videoLoading, 
+    productsCount: products.length,
+    dopePicksCount: dopePicks.length,
+    weeklyPicksCount: weeklyPicks.length
+  })
   
   // Fluid navigation hooks
   const { navigateWithTransition, isNavigating } = useFluidNavigation()
@@ -771,7 +784,7 @@ export default function DopeTechEcommerce() {
   return (
     <PageTransition>
       <div className="text-white min-h-screen transition-colors duration-100 tap-feedback scrollbar-hide gradient-bg">
-        <SEOOptimizer structuredData={defaultStructuredData} />
+        {/* SEO handled by layout.tsx metadata */}
       
       {/* Loading Overlay */}
       {isLoading && (

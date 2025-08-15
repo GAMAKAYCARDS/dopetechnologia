@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,6 +9,7 @@ export async function POST(request: NextRequest) {
     const subtitle = formData.get('subtitle') as string
     const description = formData.get('description') as string
     const displayOrder = parseInt(formData.get('display_order') as string) || 0
+    const showContent = formData.get('show_content') === 'true'
 
     if (!file) {
       return NextResponse.json(
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
     const fileName = `${Date.now()}-${file.name}`
 
     // Upload file to storage
-    const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
       .from('hero-images')
       .upload(fileName, file)
 
@@ -34,12 +35,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the public URL
-    const { data: urlData } = supabaseAdmin.storage
+    const { data: urlData } = supabase.storage
       .from('hero-images')
       .getPublicUrl(fileName)
 
     // Insert record into hero_images table
-    const { data: insertData, error: insertError } = await supabaseAdmin
+    const { data: insertData, error: insertError } = await supabase
       .from('hero_images')
       .insert([
         {
@@ -51,7 +52,8 @@ export async function POST(request: NextRequest) {
           button_text: '',
           button_link: '',
           display_order: displayOrder,
-          is_active: true
+          is_active: true,
+          show_content: showContent
         }
       ])
       .select()

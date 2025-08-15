@@ -29,6 +29,7 @@ import { getProducts, type Product } from "@/lib/products-data"
 import { supabase } from "@/lib/supabase"
 import { useAssets } from '@/hooks/use-assets'
 import { AssetUploader } from '@/components/asset-uploader'
+import { HeroImageManager } from '@/components/hero-image-manager'
 
 interface AdminProduct extends Product {
   isNew?: boolean
@@ -380,6 +381,17 @@ export default function DopeTechAdmin() {
           >
             <FileImage className="w-4 h-4" />
             <span>Assets</span>
+          </button>
+          <button
+            onClick={() => setActiveTab("carousel")}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
+              activeTab === "carousel"
+                ? "bg-[#F7DD0F] text-black"
+                : "text-gray-400 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            <ImageIcon className="w-4 h-4" />
+            <span>Carousel Editor</span>
           </button>
         </div>
 
@@ -1246,6 +1258,22 @@ export default function DopeTechAdmin() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Carousel Editor Tab */}
+        {activeTab === "carousel" && (
+          <div className="space-y-8">
+            {/* Header Controls */}
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-[#F7DD0F]">Carousel Editor</h2>
+              <p className="text-gray-400">Manage hero carousel images and content visibility</p>
+            </div>
+
+            {/* Carousel Editor Component */}
+            <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+              <HeroImageManager />
+            </div>
           </div>
         )}
       </div>

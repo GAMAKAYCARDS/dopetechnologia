@@ -8,8 +8,10 @@ interface Slide {
   id: number
   image: string
   header: string
+  subtitle?: string
   description: string
   link?: string
+  showContent: boolean
 }
 
 interface SlidingCardCarouselProps {
@@ -168,12 +170,77 @@ export function SlidingCardCarousel({
               style={{ backgroundImage: currentSlideData?.image ? `url(${currentSlideData.image})` : 'none' }}
             >
               {/* Gradient Overlay */}
-                             <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
             </div>
+
+            {/* Content Display */}
+            {currentSlideData?.showContent && currentSlideData && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 20 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="absolute left-8 sm:left-12 md:left-16 top-1/2 -translate-y-1/2 z-10 max-w-md sm:max-w-lg md:max-w-xl"
+              >
+                <div className="space-y-4 sm:space-y-6">
+                  {/* Title */}
+                  <motion.h2 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight"
+                  >
+                    {currentSlideData.header}
+                  </motion.h2>
+                  
+                  {/* Subtitle */}
+                  {currentSlideData.subtitle && (
+                    <motion.p 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.4 }}
+                      className="text-lg sm:text-xl md:text-2xl text-[#F7DD0F] font-semibold"
+                    >
+                      {currentSlideData.subtitle}
+                    </motion.p>
+                  )}
+                  
+                  {/* Description */}
+                  <motion.p 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.5 }}
+                    className="text-sm sm:text-base md:text-lg text-gray-200 leading-relaxed"
+                  >
+                    {currentSlideData.description}
+                  </motion.p>
+                  
+                  {/* Call to Action Button */}
+                  {currentSlideData.link && (
+                    <motion.button
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.6 }}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        window.open(currentSlideData.link, '_blank')
+                      }}
+                      className="bg-[#F7DD0F] text-black px-6 py-3 sm:px-8 sm:py-4 rounded-full font-semibold hover:bg-[#F7DD0F]/90 transition-all duration-200 hover:scale-105 shadow-lg text-sm sm:text-base"
+                    >
+                      Learn More
+                    </motion.button>
+                  )}
+                </div>
+              </motion.div>
+            )}
+
+
 
 
           </motion.div>
         </AnimatePresence>
+
+
 
         {/* Navigation Arrows */}
         {slides.length > 1 && (
@@ -256,28 +323,36 @@ export const defaultSlides: Slide[] = [
     id: 1,
     image: '/products/keyboard.png',
     header: 'Premium Gaming Keyboards',
+    subtitle: 'Ultimate Precision & Performance',
     description: 'Experience ultimate precision and performance with our collection of high-end mechanical keyboards designed for gamers and professionals.',
-    link: '/product/1'
+    link: '/product/1',
+    showContent: true
   },
   {
     id: 2,
     image: '/products/mouse.png',
     header: 'Ergonomic Gaming Mice',
+    subtitle: 'Advanced Sensors & RGB Lighting',
     description: 'Dominate your games with precision-engineered mice featuring advanced sensors and customizable RGB lighting.',
-    link: '/product/2'
+    link: '/product/2',
+    showContent: true
   },
   {
     id: 3,
     image: '/products/headphones.png',
     header: 'Immersive Audio Experience',
+    subtitle: 'Crystal Clear Sound',
     description: 'Crystal clear sound and premium comfort with our selection of gaming headsets and professional audio equipment.',
-    link: '/product/3'
+    link: '/product/3',
+    showContent: true
   },
   {
     id: 4,
     image: '/products/speaker.png',
     header: 'Studio-Quality Speakers',
+    subtitle: 'Rich, Detailed Sound',
     description: 'Transform your setup with powerful speakers that deliver rich, detailed sound for music, gaming, and entertainment.',
-    link: '/product/4'
+    link: '/product/4',
+    showContent: true
   }
 ]

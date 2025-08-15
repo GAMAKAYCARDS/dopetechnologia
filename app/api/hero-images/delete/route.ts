@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 
 export async function DELETE(request: NextRequest) {
   try {
@@ -14,7 +14,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // First, get the image record to get the filename
-    const { data: imageData, error: fetchError } = await supabaseAdmin
+    const { data: imageData, error: fetchError } = await supabase
       .from('hero_images')
       .select('image_file_name')
       .eq('id', id)
@@ -29,7 +29,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete from database
-    const { error: deleteError } = await supabaseAdmin
+    const { error: deleteError } = await supabase
       .from('hero_images')
       .delete()
       .eq('id', id)
@@ -44,7 +44,7 @@ export async function DELETE(request: NextRequest) {
 
     // Delete file from storage if filename exists
     if (imageData.image_file_name && typeof imageData.image_file_name === 'string') {
-      const { error: storageError } = await supabaseAdmin.storage
+      const { error: storageError } = await supabase.storage
         .from('hero-images')
         .remove([imageData.image_file_name])
 

@@ -25,7 +25,7 @@ const fallbackProducts: Product[] = [
     price: 129.99,
     original_price: 159.99,
     image_url: "/products/keyboard.png",
-    category: "keyboards",
+    category: "keyboard",
     rating: 4.8,
     reviews: 245,
     description: "Premium mechanical gaming keyboard with RGB lighting and programmable keys",
@@ -39,8 +39,8 @@ const fallbackProducts: Product[] = [
     name: "Wireless Gaming Mouse",
     price: 89.99,
     original_price: 119.99,
-    image_url: "/products/mouse.png",
-    category: "mice",
+    image_url: "/products/key.png",
+    category: "mouse",
     rating: 4.7,
     reviews: 189,
     description: "High-precision wireless gaming mouse with customizable DPI",
@@ -54,7 +54,7 @@ const fallbackProducts: Product[] = [
     name: "Premium Headphones",
     price: 199.99,
     original_price: 249.99,
-    image_url: "/products/headphones.png",
+    image_url: "/products/Screenshot 2025-08-02 215007.png",
     category: "audio",
     rating: 4.9,
     reviews: 312,
@@ -69,12 +69,27 @@ const fallbackProducts: Product[] = [
     name: "Gaming Monitor",
     price: 299.99,
     original_price: 399.99,
-    image_url: "/products/monitor.png",
+    image_url: "/products/Screenshot 2025-08-02 215024.png",
     category: "monitor",
     rating: 4.6,
     reviews: 156,
     description: "27-inch 144Hz gaming monitor with 1ms response time",
     features: ["144Hz refresh rate", "1ms response", "FreeSync", "HDR support"],
+    in_stock: true,
+    discount: 25,
+    hidden_on_home: false
+  },
+  {
+    id: 5,
+    name: "Gaming Speaker System",
+    price: 149.99,
+    original_price: 199.99,
+    image_url: "/products/Screenshot 2025-08-02 215110.png",
+    category: "speaker",
+    rating: 4.5,
+    reviews: 98,
+    description: "Immersive gaming speaker system with subwoofer",
+    features: ["2.1 Channel", "Subwoofer", "RGB lighting", "Gaming optimized"],
     in_stock: true,
     discount: 25,
     hidden_on_home: false
@@ -86,11 +101,18 @@ export async function getProducts(): Promise<Product[]> {
   try {
     console.log('🔗 Connecting to Supabase...')
     
-    const { data, error } = await supabase
+    // Add a timeout to prevent hanging
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Request timeout')), 5000) // 5 second timeout
+    })
+    
+    const supabasePromise = supabase
       .from('products')
       .select('*')
       .eq('hidden_on_home', false)
       .order('id', { ascending: true });
+
+    const { data, error } = await Promise.race([supabasePromise, timeoutPromise]) as any;
 
     if (error) {
       console.error('❌ Supabase error:', error);
@@ -99,6 +121,12 @@ export async function getProducts(): Promise<Product[]> {
 
     console.log('✅ Supabase query successful')
     console.log('📦 Data received:', data?.length || 0, 'products')
+    
+    // If no data or empty array, use fallback
+    if (!data || data.length === 0) {
+      console.log('⚠️ No products in database, using fallback')
+      return fallbackProducts;
+    }
     
     return (data as unknown as Product[]) || [];
   } catch (error) {
@@ -158,11 +186,18 @@ export async function getProductsByCategory(category: string): Promise<Product[]
 // Get random dope picks (maximum 6 products)
 export async function getDopePicks(maxCount: number = 6): Promise<Product[]> {
   try {
-    const { data, error } = await supabase
+    // Add timeout protection
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Request timeout')), 5000)
+    })
+    
+    const supabasePromise = supabase
       .from('products')
       .select('*')
       .eq('hidden_on_home', false)
       .order('id', { ascending: true });
+
+    const { data, error } = await Promise.race([supabasePromise, timeoutPromise]) as any;
 
     if (error) {
       console.error('❌ Supabase error:', error);
@@ -170,7 +205,9 @@ export async function getDopePicks(maxCount: number = 6): Promise<Product[]> {
     }
 
     if (!data || data.length === 0) {
-      return [];
+      console.log('⚠️ No products in database for dope picks, using fallback')
+      const shuffled = [...fallbackProducts].sort(() => Math.random() - 0.5);
+      return shuffled.slice(0, Math.min(maxCount, shuffled.length));
     }
 
     // Randomly shuffle the products and take up to maxCount
@@ -187,11 +224,18 @@ export async function getDopePicks(maxCount: number = 6): Promise<Product[]> {
 // Get random weekly picks (maximum 4 products)
 export async function getWeeklyPicks(maxCount: number = 4): Promise<Product[]> {
   try {
-    const { data, error } = await supabase
+    // Add timeout protection
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Request timeout')), 5000)
+    })
+    
+    const supabasePromise = supabase
       .from('products')
       .select('*')
       .eq('hidden_on_home', false)
       .order('id', { ascending: true });
+
+    const { data, error } = await Promise.race([supabasePromise, timeoutPromise]) as any;
 
     if (error) {
       console.error('❌ Supabase error:', error);
@@ -199,7 +243,9 @@ export async function getWeeklyPicks(maxCount: number = 4): Promise<Product[]> {
     }
 
     if (!data || data.length === 0) {
-      return [];
+      console.log('⚠️ No products in database for weekly picks, using fallback')
+      const shuffled = [...fallbackProducts].sort(() => Math.random() - 0.5);
+      return shuffled.slice(0, Math.min(maxCount, shuffled.length));
     }
 
     // Randomly shuffle the products and take up to maxCount

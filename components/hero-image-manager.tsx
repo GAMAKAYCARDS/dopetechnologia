@@ -29,7 +29,8 @@ export function HeroImageManager() {
     title: '',
     subtitle: '',
     description: '',
-    button_link: ''
+    button_link: '',
+    show_content: true
   })
   const [previewMode, setPreviewMode] = useState(false)
 
@@ -37,6 +38,7 @@ export function HeroImageManager() {
     const file = event.target.files?.[0]
     if (!file) return
 
+    console.log('🎯 Starting file upload process...')
     setUploading(true)
     try {
       const success = await uploadHeroImage(file, {
@@ -45,15 +47,19 @@ export function HeroImageManager() {
         description: uploadForm.description,
         button_text: '',
         button_link: uploadForm.button_link,
-        display_order: heroImages.length + 1
+        display_order: heroImages.length + 1,
+        show_content: uploadForm.show_content
       })
 
       if (success) {
+        console.log('✅ Upload completed successfully')
         event.target.value = '' // Clear the input
-        setUploadForm({ title: '', subtitle: '', description: '', button_link: '' }) // Clear form
+        setUploadForm({ title: '', subtitle: '', description: '', button_link: '', show_content: true }) // Clear form
+      } else {
+        console.log('❌ Upload failed')
       }
     } catch (error) {
-      console.error('Upload error:', error)
+      console.error('❌ Upload error in component:', error)
     } finally {
       setUploading(false)
     }
@@ -74,7 +80,8 @@ export function HeroImageManager() {
       button_text: image.button_text,
       button_link: image.button_link,
       display_order: image.display_order,
-      is_active: image.is_active
+      is_active: image.is_active,
+      show_content: image.show_content !== false
     })
   }
 
@@ -97,12 +104,15 @@ export function HeroImageManager() {
 
   if (loading) {
     return (
-      <Card>
+      <Card className="bg-black/50 border-[#F7DD0F]/20">
         <CardHeader>
-          <CardTitle>Hero Images</CardTitle>
+          <CardTitle className="text-white">Hero Images</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-8">Loading hero images...</div>
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#F7DD0F]"></div>
+            <span className="ml-2 text-white">Loading hero images...</span>
+          </div>
         </CardContent>
       </Card>
     )
@@ -260,6 +270,20 @@ export function HeroImageManager() {
                 When users click on this carousel slide, they will be redirected to this URL
               </p>
             </div>
+            <div className="flex items-center justify-between p-4 bg-black/30 rounded-lg border border-[#F7DD0F]/20">
+              <div>
+                <Label className="text-white font-medium">Show Content</Label>
+                <p className="text-xs text-gray-400 mt-1">
+                  Display title, subtitle, and description on this carousel slide
+                </p>
+              </div>
+              <Switch
+                checked={uploadForm.show_content}
+                onCheckedChange={(checked) => setUploadForm({ ...uploadForm, show_content: checked })}
+                disabled={uploading}
+                className="data-[state=checked]:bg-[#F7DD0F] data-[state=unchecked]:bg-gray-600"
+              />
+            </div>
           </div>
           
           {/* File Upload */}
@@ -383,6 +407,19 @@ export function HeroImageManager() {
                           <p className="text-xs text-gray-400 mt-1">
                             When users click on this carousel slide, they will be redirected to this URL
                           </p>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-black/30 rounded-lg border border-[#F7DD0F]/20">
+                          <div>
+                            <Label className="text-white font-medium">Show Content</Label>
+                            <p className="text-xs text-gray-400 mt-1">
+                              Display title, subtitle, and description on this carousel slide
+                            </p>
+                          </div>
+                          <Switch
+                            checked={editForm.show_content !== false}
+                            onCheckedChange={(checked) => setEditForm({ ...editForm, show_content: checked })}
+                            className="data-[state=checked]:bg-[#F7DD0F] data-[state=unchecked]:bg-gray-600"
+                          />
                         </div>
                         <div className="flex gap-2">
                           <Button 

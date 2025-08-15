@@ -12,6 +12,7 @@ export interface HeroImage {
   button_link?: string
   display_order: number
   is_active: boolean
+  show_content?: boolean
   created_at: string
   updated_at: string
 }
@@ -40,7 +41,13 @@ export function useHeroImages() {
         return
       }
 
-      setHeroImages(tableData ? (tableData as unknown as HeroImage[]) : [])
+      // Add default show_content value for records that don't have it
+      const processedData = tableData ? tableData.map((item: any) => ({
+        ...item,
+        show_content: item.show_content !== undefined ? item.show_content : true
+      })) : []
+      
+      setHeroImages(processedData as HeroImage[])
     } catch (error) {
       console.error('Error loading hero images:', error)
       setError('Failed to load hero images')
@@ -56,30 +63,59 @@ export function useHeroImages() {
     button_text?: string
     button_link?: string
     display_order?: number
+    show_content?: boolean
   }): Promise<boolean> => {
     try {
+      console.log('🚀 Starting hero image upload...')
+      console.log('📁 File:', file.name, 'Size:', file.size)
+      console.log('📝 Metadata:', metadata)
+
       const formData = new FormData()
       formData.append('file', file)
       formData.append('title', metadata?.title || '')
       formData.append('subtitle', metadata?.subtitle || '')
       formData.append('description', metadata?.description || '')
       formData.append('display_order', (metadata?.display_order || 0).toString())
+      formData.append('show_content', (metadata?.show_content !== false).toString())
 
-      const response = await fetch('/api/hero-images/upload', {
+      console.log('🌐 Making fetch request to /api/hero-images/upload')
+      
+      // Get the current origin for the fetch request
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'
+      const apiUrl = `${origin}/api/hero-images/upload`
+      
+      console.log('🌐 Full API URL:', apiUrl)
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
-        body: formData
+        body: formData,
+        headers: {
+          // Don't set Content-Type for FormData, let the browser set it with boundary
+        }
       })
+
+      console.log('📡 Response status:', response.status)
+      console.log('📡 Response ok:', response.ok)
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error || 'Upload failed')
+        console.error('❌ Server error:', errorData)
+        throw new Error(errorData.error || `Upload failed with status ${response.status}`)
       }
+
+      const result = await response.json()
+      console.log('✅ Upload successful:', result)
 
       await loadHeroImages() // Reload the images
       return true
     } catch (error) {
-      console.error('Error uploading hero image:', error)
-      setError('Failed to upload hero image')
+      console.error('❌ Error uploading hero image:', error)
+      console.error('❌ Error details:', {
+        name: error instanceof Error ? error.name : 'Unknown',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : 'No stack trace'
+      })
+      setError(`Failed to upload hero image: ${error instanceof Error ? error.message : String(error)}`)
       return false
     }
   }
