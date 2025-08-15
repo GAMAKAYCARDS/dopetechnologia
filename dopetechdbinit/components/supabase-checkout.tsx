@@ -371,7 +371,7 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
                           id="phone"
                           value={customerInfo.phone.replace(/^\+977/, '')}
                           onChange={(e) => handlePhoneChange(e.target.value)}
-                          className="w-full pl-32 pr-4 py-3 border border-white/20 rounded-lg focus:ring-2 focus:ring-[#F7DD0F] focus:border-transparent bg-white/5 text-white placeholder-gray-400 backdrop-blur-sm text-base md:text-lg"
+                          className="w-full pl-32 pr-4 py-3 border border-white/20 rounded-lg focus:ring-2 focus:ring-[#F7DD0F] focus:border-transparent bg-white/5 text-white placeholder-gray-400 text-base md:text-lg"
                           placeholder="98XXXXXXXX"
                           required
                         />

@@ -100,8 +100,8 @@ export default function GoogleFormsCheckout({ isOpen, onClose, cart, total, onCa
   }
 
   const isPaymentValid = () => {
-    // Make receipt upload optional - user can submit without it
-    return true
+    // Receipt upload is now required
+    return receiptFile !== null
   }
 
   const shippingCost = 5 // Fixed delivery cost
@@ -351,7 +351,7 @@ export default function GoogleFormsCheckout({ isOpen, onClose, cart, total, onCa
   // Main Modal Container
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-black/50">
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl w-full max-w-4xl max-h-[95vh] overflow-hidden border border-white/20 gradient-bg">
+      <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl w-full max-w-6xl max-h-[98vh] overflow-hidden border border-white/20 gradient-bg">
         {/* Header */}
         <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/20 bg-white/10 backdrop-blur-sm">
           <div className="flex items-center space-x-3 md:space-x-4">
@@ -372,7 +372,7 @@ export default function GoogleFormsCheckout({ isOpen, onClose, cart, total, onCa
         </div>
 
         {/* Content */}
-        <div className="flex flex-col lg:flex-row h-[calc(95vh-80px)]">
+        <div className="flex flex-col lg:flex-row h-[calc(98vh-80px)]">
           {/* Left Column */}
           <div className="flex-1 p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-white/20 overflow-y-auto">
             {currentStep === 'customer-info' ? (
@@ -427,7 +427,7 @@ export default function GoogleFormsCheckout({ isOpen, onClose, cart, total, onCa
                           id="phone"
                           value={customerInfo.phone.replace(/^\+977/, '')}
                           onChange={(e) => handlePhoneChange(e.target.value)}
-                          className="w-full pl-32 pr-4 py-3 border border-white/20 rounded-lg focus:ring-2 focus:ring-[#F7DD0F] focus:border-transparent bg-white/5 text-white placeholder-gray-400 backdrop-blur-sm text-base md:text-lg"
+                          className="w-full pl-32 pr-4 py-3 border border-white/20 rounded-lg focus:ring-2 focus:ring-[#F7DD0F] focus:border-transparent bg-white/5 text-white placeholder-gray-400 text-base md:text-lg"
                           placeholder="98XXXXXXXX"
                           required
                         />
@@ -558,9 +558,19 @@ export default function GoogleFormsCheckout({ isOpen, onClose, cart, total, onCa
                 <div>
                   <h3 className="text-base md:text-lg font-semibold text-white mb-4">Scan QR Code to Pay</h3>
                   <div className="bg-white/5 rounded-lg p-6 border border-white/10 text-center">
-                    <div className="w-48 h-48 mx-auto bg-white rounded-lg p-4 mb-4">
-                      {/* Placeholder QR Code - Replace with actual QR code */}
-                      <div className="w-full h-full bg-gray-200 rounded flex items-center justify-center">
+                    <div className="w-56 h-80 mx-auto bg-white rounded-lg p-4 mb-4">
+                      <img 
+                        src="/payment/paymentQR.svg" 
+                        alt="Payment QR Code"
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          // Fallback if QR code image fails to load
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          target.nextElementSibling?.classList.remove('hidden');
+                        }}
+                      />
+                      <div className="w-full h-full bg-gray-200 rounded flex items-center justify-center hidden">
                         <span className="text-gray-500 text-sm">QR Code Here</span>
                       </div>
                     </div>
@@ -571,7 +581,7 @@ export default function GoogleFormsCheckout({ isOpen, onClose, cart, total, onCa
 
                                  {/* Receipt Upload */}
                  <div>
-                   <h3 className="text-base md:text-lg font-semibold text-white mb-4">Upload Payment Receipt (Optional)</h3>
+                   <h3 className="text-base md:text-lg font-semibold text-white mb-4">Upload Payment Receipt (Required)</h3>
                    <div className="space-y-4">
                      <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center hover:border-[#F7DD0F] transition-colors">
                        <input
@@ -587,7 +597,7 @@ export default function GoogleFormsCheckout({ isOpen, onClose, cart, total, onCa
                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                            </svg>
                          </div>
-                         <p className="text-white font-medium">Click to upload receipt (optional)</p>
+                         <p className="text-white font-medium">Click to upload receipt (required)</p>
                          <p className="text-gray-400 text-sm">PNG, JPG, PDF up to 5MB</p>
                        </label>
                      </div>
@@ -674,17 +684,25 @@ export default function GoogleFormsCheckout({ isOpen, onClose, cart, total, onCa
             {/* Action Buttons */}
             <div className="space-y-3">
               {currentStep === 'payment' && (
-                <Button 
-                  onClick={handleBackStep}
-                  className="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-lg font-semibold text-base md:text-lg border border-white/20"
-                >
-                  Back to Details
-                </Button>
+                <>
+                  <Button 
+                    onClick={handleBackStep}
+                    className="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-lg font-semibold text-base md:text-lg border border-white/20"
+                  >
+                    Back to Details
+                  </Button>
+                  <button
+                    onClick={() => setCurrentStep('customer-info')}
+                    className="w-full text-[#F7DD0F] hover:text-[#F7DD0F]/80 py-2 px-6 rounded-lg font-medium transition-colors underline"
+                  >
+                    Edit order details
+                  </button>
+                </>
               )}
               
                              <Button 
                  className="w-full bg-[#F7DD0F] hover:bg-[#F7DD0F]/90 text-black py-3 rounded-lg font-semibold text-base md:text-lg disabled:opacity-50 disabled:cursor-not-allowed animate-scale-in premium-transition active:scale-95"
-                 disabled={currentStep === 'customer-info' ? !isCustomerInfoValid() : false}
+                 disabled={currentStep === 'customer-info' ? !isCustomerInfoValid() : !isPaymentValid()}
                  onClick={handleSubmitOrder}
                >
                  {currentStep === 'customer-info' ? 'Continue to Payment' : 'Submit Order'}

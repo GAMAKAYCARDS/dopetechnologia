@@ -879,7 +879,7 @@ export default function DopeTechEcommerce() {
                     placeholder="Search for keyboards, mice, headphones, speakers..."
                     value={searchDraft}
                     onChange={(e) => setSearchDraft(e.target.value)}
-                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 backdrop-blur-sm border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F7DD0F] focus:border-transparent text-white placeholder-gray-400"
+                    className="w-full pl-12 pr-4 py-4 text-lg bg-white/10 border border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#F7DD0F] focus:border-transparent text-white placeholder-gray-400"
                     autoFocus
                   />
                 </div>

@@ -35,7 +35,7 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [orderConfirmed, setOrderConfirmed] = useState(false)
   const [orderId, setOrderId] = useState('')
-  const [currentStep, setCurrentStep] = useState<'customer-info' | 'payment' | 'confirmation'>('customer-info')
+  const [currentStep, setCurrentStep] = useState<'customer-info' | 'payment-selection' | 'payment' | 'confirmation'>('customer-info')
   const [paymentOption, setPaymentOption] = useState<'full' | 'deposit'>('full')
   const [receiptFile, setReceiptFile] = useState<File | null>(null)
   const [receiptFileName, setReceiptFileName] = useState('')
@@ -96,7 +96,7 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
   }
 
   const isPaymentValid = () => {
-    return true // Receipt upload is optional
+    return receiptFile !== null // Receipt upload is required
   }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -192,6 +192,12 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
         console.log('Customer info not valid')
         return
       }
+      console.log('Advancing to payment selection step')
+      setCurrentStep('payment-selection')
+      return
+    }
+    
+    if (currentStep === 'payment-selection') {
       console.log('Advancing to payment step')
       setCurrentStep('payment')
       return
@@ -300,7 +306,7 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-black/50">
-      <div className={`bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden border border-white/20 gradient-bg transition-all duration-300 ${
+      <div className={`bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl w-full max-w-6xl overflow-hidden border border-white/20 gradient-bg transition-all duration-300 ${
         isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
       }`}>
         {/* Header */}
@@ -317,7 +323,7 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
           </button>
         </div>
 
-        <div className="flex flex-col lg:flex-row h-[70vh] max-h-[600px]">
+        <div className="flex flex-col lg:flex-row h-[80vh] max-h-[800px]">
           {/* Main Content */}
           <div className="flex-1 p-6 overflow-y-auto">
             {currentStep === 'customer-info' ? (
@@ -371,7 +377,7 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
                           id="phone"
                           value={customerInfo.phone.replace(/^\+977/, '')}
                           onChange={(e) => handlePhoneChange(e.target.value)}
-                          className="w-full pl-32 pr-4 py-3 border border-white/20 rounded-lg focus:ring-2 focus:ring-[#F7DD0F] focus:border-transparent bg-white/5 text-white placeholder-gray-400 backdrop-blur-sm text-base md:text-lg"
+                          className="w-full pl-32 pr-4 py-3 border border-white/20 rounded-lg focus:ring-2 focus:ring-[#F7DD0F] focus:border-transparent bg-white/5 text-white placeholder-gray-400 text-base md:text-lg"
                           placeholder="98XXXXXXXX"
                           required
                         />
@@ -456,12 +462,12 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
                   </div>
                 </div>
               </div>
-            ) : (
-              // Payment Screen
+            ) : currentStep === 'payment-selection' ? (
+              // Payment Selection Screen
               <div className="space-y-6 md:space-y-8">
-                {/* Payment Options */}
                 <div>
-                  <h2 className="text-lg md:text-xl font-semibold text-white mb-4 md:mb-6">Payment Options</h2>
+                  <h2 className="text-lg md:text-xl font-semibold text-white mb-4 md:mb-6">Choose Payment Option</h2>
+                  <p className="text-gray-300 mb-6">Select how you'd like to pay for your order.</p>
                   
                   <div className="space-y-4">
                     <label className="flex items-center space-x-4 p-4 bg-white/5 rounded-lg border border-white/10 cursor-pointer hover:bg-white/10 transition-colors">
@@ -497,7 +503,10 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
                     </label>
                   </div>
                 </div>
-
+              </div>
+            ) : (
+              // Payment Screen
+              <div className="space-y-6 md:space-y-8">
                 {/* QR Code Section */}
                 <div>
                   <h3 className="text-base md:text-lg font-semibold text-white mb-4 flex items-center gap-2">
@@ -505,10 +514,10 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
                     Scan QR Code to Pay
                   </h3>
                   <div className="bg-white/5 rounded-lg p-6 border border-white/10 text-center">
-                                         <div className="w-48 h-48 mx-auto bg-white rounded-lg p-4 mb-4">
+                                         <div className="w-56 h-80 mx-auto bg-white rounded-lg p-4 mb-4">
                        {/* Replace this with your actual payment QR code */}
                        <img 
-                         src="/payment/paymentqr.svg" 
+                         src="/payment/paymentQR.svg" 
                          alt="Payment QR Code"
                          className="w-full h-full object-contain"
                          onError={(e) => {
@@ -531,7 +540,7 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
                 <div>
                   <h3 className="text-base md:text-lg font-semibold text-white mb-4 flex items-center gap-2">
                     <Upload className="w-5 h-5" />
-                    Upload Payment Receipt (Optional)
+                    Upload Payment Receipt (Required)
                   </h3>
                   <div className="space-y-4">
                     <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center hover:border-[#F7DD0F] transition-colors">
@@ -546,7 +555,7 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
                         <div className="text-[#F7DD0F] mb-2">
                           <Upload className="w-8 h-8 mx-auto" />
                         </div>
-                        <p className="text-white font-medium">Click to upload receipt (optional)</p>
+                        <p className="text-white font-medium">Click to upload receipt (required)</p>
                         <p className="text-gray-400 text-sm">PNG, JPG, PDF up to 5MB</p>
                       </label>
                     </div>
@@ -626,10 +635,10 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
                 </div>
 
                 {/* Action Button */}
-                <div className="mt-6">
+                <div className="mt-6 space-y-3">
                   <button
                     onClick={handleSubmitOrder}
-                    disabled={isSubmitting || (currentStep === 'customer-info' && !isCustomerInfoValid())}
+                    disabled={isSubmitting || (currentStep === 'customer-info' && !isCustomerInfoValid()) || (currentStep === 'payment' && !isPaymentValid())}
                     className="w-full bg-[#F7DD0F] text-black py-3 px-6 rounded-xl font-semibold hover:bg-[#F7DD0F]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? (
@@ -639,10 +648,21 @@ export default function SupabaseCheckout({ isOpen, onClose, cart, total, onCartR
                       </>
                     ) : currentStep === 'customer-info' ? (
                       'Continue to Payment'
+                    ) : currentStep === 'payment-selection' ? (
+                      'Continue to Payment'
                     ) : (
                       'Confirm Order'
                     )}
                   </button>
+                  
+                  {(currentStep === 'payment' || currentStep === 'payment-selection') && (
+                    <button
+                      onClick={() => setCurrentStep('customer-info')}
+                      className="w-full text-[#F7DD0F] hover:text-[#F7DD0F]/80 py-2 px-6 rounded-xl font-medium transition-colors underline"
+                    >
+                      Edit order details
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

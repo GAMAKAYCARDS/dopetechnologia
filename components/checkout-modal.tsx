@@ -25,7 +25,7 @@ export default function CheckoutModal({ isOpen, onClose, cart, total }: Checkout
   const [shouldRender, setShouldRender] = useState(isOpen)
   const { logoUrl, loading: logoLoading } = useLogoUrl()
   const [isClosing, setIsClosing] = useState(false)
-  const [activeTab, setActiveTab] = useState<'customer-info' | 'payment' | 'receipt'>('customer-info')
+  const [activeTab, setActiveTab] = useState<'customer-info' | 'payment-selection' | 'payment' | 'receipt'>('customer-info')
   const [receiptFile, setReceiptFile] = useState<File | null>(null)
   const [receiptPreview, setReceiptPreview] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -246,7 +246,7 @@ export default function CheckoutModal({ isOpen, onClose, cart, total }: Checkout
     >
       <div
         className={[
-          "bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl w-full max-w-7xl max-h-[95vh] overflow-hidden border border-white/20 gradient-bg",
+          "bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl w-full max-w-8xl max-h-[98vh] overflow-hidden border border-white/20 gradient-bg",
           "transform-gpu transition-all duration-200",
           isClosing ? "opacity-0 translate-y-2 scale-[0.98]" : "opacity-100 translate-y-0 scale-100",
         ].join(" ")}
@@ -255,7 +255,12 @@ export default function CheckoutModal({ isOpen, onClose, cart, total }: Checkout
         <div className="flex items-center justify-between p-4 md:p-6 border-b border-white/20 bg-white/10 backdrop-blur-sm animate-slide-in-down">
           <div className="flex items-center space-x-3 md:space-x-4">
                             <img src={logoLoading ? "/logo/dopelogo.svg" : logoUrl} alt="DopeTech" className="h-6 md:h-8 w-auto" />
-            <span className="text-base md:text-lg font-semibold text-[#F7DD0F]">{activeTab === 'payment' ? 'Payment' : activeTab === 'receipt' ? 'Order confirmed' : 'Checkout'}</span>
+            <span className="text-base md:text-lg font-semibold text-[#F7DD0F]">
+              {activeTab === 'payment-selection' ? 'Payment Options' : 
+               activeTab === 'payment' ? 'Payment' : 
+               activeTab === 'receipt' ? 'Order confirmed' : 
+               'Checkout'}
+            </span>
           </div>
           <button
             onClick={onClose}
@@ -267,7 +272,7 @@ export default function CheckoutModal({ isOpen, onClose, cart, total }: Checkout
 
         {/* Content */}
         {activeTab !== 'payment' && (
-        <div ref={contentRef} className="flex flex-col lg:flex-row h-[calc(95vh-80px)]">
+        <div ref={contentRef} className="flex flex-col lg:flex-row h-[calc(98vh-80px)]">
           {/* Left Column - Customer Information */}
           <div className="flex-1 p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-white/20 overflow-y-auto animate-fade-in-up">
             
@@ -625,9 +630,9 @@ export default function CheckoutModal({ isOpen, onClose, cart, total }: Checkout
             <Button 
               className="w-full bg-[#F7DD0F] hover:bg-[#F7DD0F]/90 text-black py-3 rounded-lg font-semibold text-base md:text-lg disabled:opacity-50 disabled:cursor-not-allowed animate-scale-in premium-transition active:scale-95"
               disabled={!isCustomerInfoValid()}
-              onClick={() => setActiveTab('payment')}
+              onClick={() => setActiveTab('payment-selection')}
             >
-              Pay Now
+              Continue to Payment
             </Button>
 
             {/* Security Message */}
@@ -644,13 +649,13 @@ export default function CheckoutModal({ isOpen, onClose, cart, total }: Checkout
         </div>
         )}
 
-        {/* Payment Step */}
-        {activeTab === 'payment' && (
-          <div className="p-6 md:p-8 border-t border-white/10 bg-white/5 animate-fade-in-up h-[calc(95vh-80px)] overflow-y-auto">
+        {/* Payment Selection Step */}
+        {activeTab === 'payment-selection' && (
+          <div className="p-6 md:p-8 border-t border-white/10 bg-white/5 animate-fade-in-up h-[calc(98vh-80px)] overflow-y-auto">
             <div className="max-w-3xl mx-auto space-y-6">
               <div>
-                <h2 className="text-xl md:text-2xl font-semibold text-white">Payment</h2>
-                <p className="text-gray-300">Choose an option and scan the QR to pay.</p>
+                <h2 className="text-xl md:text-2xl font-semibold text-white">Choose Payment Option</h2>
+                <p className="text-gray-300">Select how you'd like to pay for your order.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
@@ -673,11 +678,39 @@ export default function CheckoutModal({ isOpen, onClose, cart, total }: Checkout
                 </button>
               </div>
 
+              <div className="flex items-center justify-between">
+                <button
+                  className="text-gray-300 hover:text-white premium-transition"
+                  onClick={() => setActiveTab('customer-info')}
+                >
+                  ← Back to checkout
+                </button>
+                <Button
+                  className="bg-[#F7DD0F] hover:bg-[#F7DD0F]/90 text-black px-5 py-2.5 rounded-lg font-semibold premium-transition active:scale-95"
+                  disabled={!selectedPaymentOption}
+                  onClick={() => setActiveTab('payment')}
+                >
+                  Continue to Payment
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Payment Step */}
+        {activeTab === 'payment' && (
+          <div className="p-6 md:p-8 border-t border-white/10 bg-white/5 animate-fade-in-up h-[calc(98vh-80px)] overflow-y-auto">
+            <div className="max-w-3xl mx-auto space-y-6">
+              <div>
+                <h2 className="text-xl md:text-2xl font-semibold text-white">Complete Payment</h2>
+                <p className="text-gray-300">Scan the QR code to pay for your order.</p>
+              </div>
+
               <div className="rounded-2xl border border-white/15 bg-white/5 p-5 md:p-6">
                 <h3 className="text-white font-semibold text-lg md:text-xl mb-3">Scan to pay</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 items-center">
                   <div className="bg-black/40 rounded-xl p-2 md:p-3 border border-white/10 flex items-center justify-center">
-                    <img src="/payment/paymentqr.svg" alt="Payment QR" className="w-full h-auto max-w-[180px] md:max-w-[220px]" />
+                    <img src="/payment/paymentQR.svg" alt="Payment QR" className="w-full h-auto max-w-[200px] md:max-w-[280px] max-h-[400px] md:max-h-[500px]" />
                   </div>
                   <div>
                     <div className="text-gray-300 text-sm mb-2">Amount</div>
@@ -690,7 +723,7 @@ export default function CheckoutModal({ isOpen, onClose, cart, total }: Checkout
 
               {/* Upload receipt */}
               <div className="rounded-2xl border border-white/15 bg-white/5 p-5 md:p-6 animate-fade-in-up">
-                <h3 className="text-white font-semibold text-lg md:text-xl mb-3">Upload payment receipt</h3>
+                <h3 className="text-white font-semibold text-lg md:text-xl mb-3">Upload payment receipt (Required)</h3>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -701,7 +734,7 @@ export default function CheckoutModal({ isOpen, onClose, cart, total }: Checkout
 
                 {!receiptPreview ? (
                   <div className="flex items-center justify-between gap-4 bg-white/5 border border-white/10 rounded-xl p-4">
-                    <div className="text-gray-300 text-sm">Attach a screenshot or photo of your payment</div>
+                    <div className="text-gray-300 text-sm">Attach a screenshot or photo of your payment (Required)</div>
                     <button
                       type="button"
                       className="bg-[#F7DD0F] hover:bg-[#F7DD0F]/90 text-black px-4 py-2 rounded-lg font-semibold premium-transition active:scale-95"
@@ -742,6 +775,10 @@ export default function CheckoutModal({ isOpen, onClose, cart, total }: Checkout
                   <div className="text-gray-400 text-xs mt-2">Select a payment option above to enable Confirm.</div>
                 )}
 
+                {!receiptPreview && selectedPaymentOption && (
+                  <div className="text-red-400 text-xs mt-2">Payment receipt is required to complete your order.</div>
+                )}
+
                 {isUploading && (
                   <div className="flex items-center text-gray-300 text-sm mt-2">
                     <div className="w-4 h-4 border-2 border-[#F7DD0F] border-t-transparent rounded-full animate-spin mr-2" />
@@ -763,12 +800,20 @@ export default function CheckoutModal({ isOpen, onClose, cart, total }: Checkout
               </div>
 
               <div className="flex items-center justify-between">
-                <button
-                  className="text-gray-300 hover:text-white premium-transition"
-                  onClick={() => { setSelectedPaymentOption(null); setActiveTab('customer-info') }}
-                >
-                  ← Back to checkout
-                </button>
+                <div className="flex items-center space-x-4">
+                  <button
+                    className="text-gray-300 hover:text-white premium-transition"
+                    onClick={() => setActiveTab('payment-selection')}
+                  >
+                    ← Back to payment options
+                  </button>
+                  <button
+                    className="text-[#F7DD0F] hover:text-[#F7DD0F]/80 premium-transition underline"
+                    onClick={() => setActiveTab('customer-info')}
+                  >
+                    Edit order details
+                  </button>
+                </div>
                 {uploadStatus === 'success' && (
                   <Button
                     className="bg-[#F7DD0F] hover:bg-[#F7DD0F]/90 text-black px-5 py-2.5 rounded-lg font-semibold premium-transition active:scale-95"
@@ -782,7 +827,7 @@ export default function CheckoutModal({ isOpen, onClose, cart, total }: Checkout
           </div>
         )}
         {activeTab === 'receipt' && (
-          <div className="p-6 md:p-8 border-t border-white/10 bg-white/5 animate-fade-in-up h-[calc(95vh-80px)] overflow-y-auto">
+          <div className="p-6 md:p-8 border-t border-white/10 bg-white/5 animate-fade-in-up h-[calc(98vh-80px)] overflow-y-auto">
             <div className="max-w-2xl mx-auto text-center space-y-6">
               <div className="mx-auto w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center border border-green-400/40">
                 <svg className="w-8 h-8 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 6L9 17l-5-5"/></svg>

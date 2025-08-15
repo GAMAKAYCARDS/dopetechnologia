@@ -120,7 +120,7 @@ export default function HeroSection({ cartCount, onCartClick }: HeroSectionProps
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#F7DD0F] transition-all premium-transition"
+                className="w-full bg-white/10 border border-white/20 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#F7DD0F] transition-all premium-transition"
                 style={{ minHeight: '48px' }}
                 autoFocus
               />
