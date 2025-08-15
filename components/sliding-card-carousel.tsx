@@ -26,6 +26,13 @@ export function SlidingCardCarousel({
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
 
+  // Reset currentSlide if it goes out of bounds
+  useEffect(() => {
+    if (slides && slides.length > 0 && currentSlide >= slides.length) {
+      setCurrentSlide(0)
+    }
+  }, [slides, currentSlide])
+
   // Auto-play functionality
   useEffect(() => {
     if (!isAutoPlaying || slides.length <= 1) return
@@ -103,15 +110,18 @@ export function SlidingCardCarousel({
       return
     }
     
-    const currentSlideData = slides[currentSlide]
-    if (currentSlideData.link) {
+    const currentSlideData = slides[safeCurrentSlide]
+    if (currentSlideData?.link) {
       window.open(currentSlideData.link, '_blank')
     }
   }
 
+  // Add error handling and debugging
+  console.log('SlidingCardCarousel - slides:', slides, 'currentSlide:', currentSlide)
+  
   if (!slides || slides.length === 0) {
     return (
-      <div className={`flex items-center justify-center h-64 bg-gradient-to-br from-gray-900 to-black rounded-2xl ${className}`}>
+      <div className={`flex items-center justify-center h-64 bg-gradient-to-br from-black via-[#F7DD0F]/20 to-black rounded-2xl ${className}`}>
         <div className="text-center">
           <p className="text-[#F7DD0F] font-semibold">No Hero Images Available</p>
           <p className="text-gray-400 text-sm">Please upload some images in the admin panel</p>
@@ -120,9 +130,13 @@ export function SlidingCardCarousel({
     )
   }
 
+  // Ensure currentSlide is within bounds
+  const safeCurrentSlide = Math.min(Math.max(0, currentSlide), slides.length - 1)
+  const currentSlideData = slides[safeCurrentSlide]
+
   return (
          <div 
-       className={`relative overflow-hidden rounded-2xl bg-gradient-to-br from-black via-gray-900 to-black shadow-2xl ${className} ${slides[currentSlide]?.link ? 'cursor-pointer' : ''}`}
+               className={`relative overflow-hidden rounded-2xl bg-black shadow-2xl ${className} ${currentSlideData?.link ? 'cursor-pointer' : ''}`}
        onMouseEnter={handleMouseEnter}
        onMouseLeave={handleMouseLeave}
        onTouchStart={onTouchStart}
@@ -134,10 +148,10 @@ export function SlidingCardCarousel({
        tabIndex={0}
      >
       {/* Main Carousel Container */}
-      <div className="relative h-full min-h-[320px] sm:min-h-[400px] md:min-h-[480px]">
+             <div className="relative h-full min-h-[320px] sm:min-h-[400px] md:min-h-[480px]">
         <AnimatePresence mode="wait">
-          <motion.div
-            key={currentSlide}
+                    <motion.div
+            key={safeCurrentSlide}
             initial={{ opacity: 0, x: 300 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -300 }}
@@ -151,10 +165,10 @@ export function SlidingCardCarousel({
             {/* Background Image */}
             <div 
               className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-              style={{ backgroundImage: `url(${slides[currentSlide].image})` }}
+              style={{ backgroundImage: currentSlideData?.image ? `url(${currentSlideData.image})` : 'none' }}
             >
               {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+                             <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
             </div>
 
 

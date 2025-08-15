@@ -204,10 +204,10 @@ export default function OptimizedProductCard({
         <Button
           onClick={handleAddToCart}
           className="w-full bg-[#F7DD0F] text-black hover:bg-[#F7DD0F]/90 transition-all duration-200 btn-primary"
-          disabled={!product.inStock}
+          disabled={!product.in_stock}
         >
           <Plus className="w-4 h-4 mr-2" />
-          {product.inStock ? "Add to Cart" : "Out of Stock"}
+          {product.in_stock ? "Add to Cart" : "Out of Stock"}
         </Button>
       </div>
 

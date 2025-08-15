@@ -40,7 +40,7 @@ export function useHeroImages() {
         return
       }
 
-      setHeroImages(tableData || [])
+      setHeroImages(tableData ? (tableData as unknown as HeroImage[]) : [])
     } catch (error) {
       console.error('Error loading hero images:', error)
       setError('Failed to load hero images')

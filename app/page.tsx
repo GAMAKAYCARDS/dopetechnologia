@@ -118,15 +118,22 @@ export default function DopeTechEcommerce() {
     }
   }, [])
 
-  // Simplified product fetching - no complex caching or timeouts
+  // Product fetching with timeout to prevent infinite loading
   useEffect(() => {
     let isMounted = true
+    let fallbackTimeout: NodeJS.Timeout | null = null
 
     const fetchProducts = async () => {
       try {
         console.log('🔄 Fetching products from Supabase...')
         
-        const supabaseProducts = await getProducts()
+        // Add timeout to prevent infinite loading
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('Request timeout')), 10000) // 10 second timeout
+        })
+        
+        const productsPromise = getProducts()
+        const supabaseProducts = await Promise.race([productsPromise, timeoutPromise]) as Product[]
         
         if (isMounted) {
           console.log('📦 Products fetched:', supabaseProducts.length)
@@ -153,10 +160,21 @@ export default function DopeTechEcommerce() {
       }
     }
 
+    // Add a fallback timeout to ensure loading state is always cleared
+    fallbackTimeout = setTimeout(() => {
+      console.warn('⚠️ Fallback timeout reached - clearing loading state')
+      if (isMounted) {
+        setIsLoading(false)
+      }
+    }, 15000) // 15 second fallback
+
     fetchProducts()
 
     return () => {
       isMounted = false
+      if (fallbackTimeout) {
+        clearTimeout(fallbackTimeout)
+      }
     }
   }, [])
 
@@ -1326,31 +1344,25 @@ export default function DopeTechEcommerce() {
               key={animationKey}
               onError={(e) => {
                 console.error('Video error:', e);
-                // Fallback to image if video fails
+                // Fallback to image if video fails - use safer DOM manipulation
                 const videoElement = e.target as HTMLVideoElement;
-                const container = videoElement.parentElement;
-                if (container && videoElement.parentNode === container) {
+                if (videoElement && videoElement.parentElement) {
                   try {
-                    // Create a new image element instead of using innerHTML
+                    // Create a new image element
                     const img = document.createElement('img');
                     img.src = '/placeholder.jpg';
                     img.alt = 'DopeTech Video';
                     img.className = 'w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 shadow-xl object-cover object-center';
                     
-                    // Replace the video element with the image
-                    container.replaceChild(img, videoElement);
+                    // Safely replace the video element
+                    const parent = videoElement.parentElement;
+                    if (parent && parent.contains(videoElement)) {
+                      parent.replaceChild(img, videoElement);
+                    }
                   } catch (error) {
                     console.warn('Error replacing video with fallback image:', error);
-                    // If replaceChild fails, try to append the image instead
-                    try {
-                      const img = document.createElement('img');
-                      img.src = '/placeholder.jpg';
-                      img.alt = 'DopeTech Video';
-                      img.className = 'w-full h-48 sm:h-56 md:h-64 lg:h-72 xl:h-80 shadow-xl object-cover object-center';
-                      container.appendChild(img);
-                    } catch (appendError) {
-                      console.warn('Failed to append fallback image:', appendError);
-                    }
+                    // Hide the video element instead of replacing it
+                    videoElement.style.display = 'none';
                   }
                 }
               }}
@@ -1531,8 +1543,8 @@ export default function DopeTechEcommerce() {
         cart={cart}
         total={getCartTotal()}
         onCartReset={handleCartReset}
-             />
-      </div>
-    </PageTransition>
+      />
+    </div>
+  </PageTransition>
   )
 }

@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
 
     // Send notification email (you can integrate with your preferred email service)
     try {
-      await sendNotificationEmail(body, order.id, receiptUrl)
+      await sendNotificationEmail(body, order.id as number, receiptUrl)
       console.log('✅ Notification email sent')
     } catch (error) {
       console.error('❌ Error sending notification email:', error)

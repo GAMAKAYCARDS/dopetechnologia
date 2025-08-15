@@ -43,7 +43,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Delete file from storage if filename exists
-    if (imageData.image_file_name) {
+    if (imageData.image_file_name && typeof imageData.image_file_name === 'string') {
       const { error: storageError } = await supabaseAdmin.storage
         .from('hero-images')
         .remove([imageData.image_file_name])

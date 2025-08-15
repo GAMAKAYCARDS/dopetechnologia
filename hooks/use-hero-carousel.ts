@@ -46,14 +46,14 @@ export function useHeroCarousel() {
         }
 
         if (data && data.length > 0) {
-          const formattedSlides: CarouselSlide[] = data
+          const formattedSlides: CarouselSlide[] = (data as unknown as HeroImage[])
             .filter((hero: HeroImage) => hero.title && hero.title.trim() !== '') // Filter out empty titles
             .map((hero: HeroImage) => ({
               id: hero.id,
               image: hero.image_url,
               header: hero.title || 'Premium Tech Gear',
               description: hero.description || hero.subtitle || 'Discover the latest in gaming and professional equipment.',
-              link: hero.button_link || undefined
+              link: (hero as any).button_link || undefined
             }))
           
           setSlides(formattedSlides)

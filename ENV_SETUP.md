@@ -2,7 +2,7 @@
 
 ## Create .env.local file
 
-Create a file named `.env.local` in your project root (`site paid/dopetech/.env.local`) with the following content:
+Create a file named `.env.local` in your project root with the following content:
 
 ```env
 # Supabase Configuration
@@ -10,13 +10,8 @@ NEXT_PUBLIC_SUPABASE_URL=https://aizgswoelfdkhyosgvzu.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpemdzd29lbGZka2h5b3Nndnp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTUyMjUsImV4cCI6MjA3MDYzMTIyNX0.4a7Smvc_bueFLqZNvGk-AW0kD5dJusNwqaSAczJs0hU
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpemdzd29lbGZka2h5b3Nndnp1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTA1NTIyNSwiZXhwIjoyMDcwNjMxMjI1fQ.gLnsyAhR8VSjbe37LdEHuFBGNDufqC4jZ9X3UOSNuGc
 
-# Google Sheets API Configuration
-GOOGLE_SHEET_ID=YOUR_SHEET_ID_HERE
-GOOGLE_SERVICE_ACCOUNT_EMAIL=YOUR_SERVICE_ACCOUNT_EMAIL
-GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY_HERE\n-----END PRIVATE KEY-----\n"
-
-# Google Drive API Configuration
-GOOGLE_DRIVE_FOLDER_ID=1U5wfCmULVs1US4JZ4FoAODLOk3zqzyS_
+# Optional: Email Service (for order notifications)
+# RESEND_API_KEY=your-resend-api-key-here
 ```
 
 ## How to get the values:
@@ -26,44 +21,9 @@ GOOGLE_DRIVE_FOLDER_ID=1U5wfCmULVs1US4JZ4FoAODLOk3zqzyS_
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Already set to your public anon key
 - `SUPABASE_SERVICE_ROLE_KEY`: Already set to your service role key
 
-### 2. GOOGLE_SHEET_ID
-- From your Google Sheet URL
-- Example: `https://docs.google.com/spreadsheets/d/1ABC123.../edit`
-- Copy the part between `/d/` and `/edit`: `1ABC123...`
-
-### 3. GOOGLE_SERVICE_ACCOUNT_EMAIL
-- Open the JSON file you downloaded from Google Cloud Console
-- Look for `"client_email"` field
-- Copy the email address (ends with `@your-project.iam.gserviceaccount.com`)
-
-### 4. GOOGLE_PRIVATE_KEY
-- Open the JSON file you downloaded from Google Cloud Console
-- Look for `"private_key"` field
-- Copy the ENTIRE private key including:
-  - `-----BEGIN PRIVATE KEY-----`
-  - The long string of characters
-  - `-----END PRIVATE KEY-----`
-- Make sure to keep the quotes around it
-
-### 5. GOOGLE_DRIVE_FOLDER_ID
-- Already set to your folder: `1U5wfCmULVs1US4JZ4FoAODLOk3zqzyS_`
-
-## Example .env.local file:
-
-```env
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=https://aizgswoelfdkhyosgvzu.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpemdzd29lbGZka2h5b3Nndnp1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUwNTUyMjUsImV4cCI6MjA3MDYzMTIyNX0.4a7Smvc_bueFLqZNvGk-AW0kD5dJusNwqaSAczJs0hU
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpemdzd29lbGZka2h5b3Nndnp1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTA1NTIyNSwiZXhwIjoyMDcwNjMxMjI1fQ.gLnsyAhR8VSjbe37LdEHuFBGNDufqC4jZ9X3UOSNuGc
-
-# Google Sheets API Configuration
-GOOGLE_SHEET_ID=1ABC123DEF456GHI789JKL
-GOOGLE_SERVICE_ACCOUNT_EMAIL=dopetech-checkout-bot@dopetech-checkout.iam.gserviceaccount.com
-GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC...\n-----END PRIVATE KEY-----\n"
-
-# Google Drive API Configuration
-GOOGLE_DRIVE_FOLDER_ID=1U5wfCmULVs1US4JZ4FoAODLOk3zqzyS_
-```
+### 2. Optional: Email Service
+- `RESEND_API_KEY`: For sending order notification emails
+- You can get this from [Resend](https://resend.com) or use any other email service
 
 ## After creating .env.local:
 
@@ -77,14 +37,14 @@ GOOGLE_DRIVE_FOLDER_ID=1U5wfCmULVs1US4JZ4FoAODLOk3zqzyS_
    - Go to your website
    - Add items to cart
    - Go to checkout
-   - Click "🔍 Debug API Status" button
-   - You should see "configured" status
+   - Submit an order
+   - Check your Supabase database for the order
 
-3. **Test upload**:
+3. **Test the checkout**:
    - Fill out the checkout form
    - Upload a receipt image
    - Submit the order
-   - Check your Google Drive folder for the uploaded file
+   - Check your Supabase Storage for the uploaded receipt
 
 ## For Netlify Deployment:
 
@@ -92,3 +52,13 @@ Add these environment variables in your Netlify dashboard:
 1. Go to Site Settings > Environment Variables
 2. Add each variable from your `.env.local` file
 3. Make sure to include the `NEXT_PUBLIC_` prefix for client-side variables
+
+## Order Flow:
+
+1. **Customer submits order** → Supabase checkout API
+2. **Order data saved** → Supabase `orders` table
+3. **Order items saved** → Supabase `order_items` table  
+4. **Receipt uploaded** → Supabase Storage `receipts` bucket
+5. **Notification sent** → Email service (optional)
+
+All orders are now processed through Supabase only - no Google Sheets integration needed!
