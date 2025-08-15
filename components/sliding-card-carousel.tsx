@@ -96,7 +96,13 @@ export function SlidingCardCarousel({
     setCurrentSlide(index)
   }
 
-  const handleSlideClick = () => {
+  const handleSlideClick = (e: React.MouseEvent) => {
+    // Don't navigate if clicking on navigation elements
+    const target = e.target as HTMLElement
+    if (target.closest('button') || target.closest('[role="button"]')) {
+      return
+    }
+    
     const currentSlideData = slides[currentSlide]
     if (currentSlideData.link) {
       window.open(currentSlideData.link, '_blank')
@@ -122,7 +128,7 @@ export function SlidingCardCarousel({
        onTouchStart={onTouchStart}
        onTouchMove={onTouchMove}
        onTouchEnd={onTouchEnd}
-       onClick={handleSlideClick}
+       onClick={(e) => handleSlideClick(e)}
        role="region"
        aria-label="Product showcase carousel"
        tabIndex={0}
@@ -162,7 +168,10 @@ export function SlidingCardCarousel({
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              onClick={goToPrevious}
+              onClick={(e) => {
+                e.stopPropagation()
+                goToPrevious()
+              }}
               className="absolute left-6 top-1/2 -translate-y-1/2 z-20 p-3 sm:p-4 bg-black/30 backdrop-blur-sm border border-white/20 rounded-full text-white hover:bg-black/50 hover:border-white/40 transition-all duration-300 group"
               aria-label="Previous slide"
             >
@@ -173,7 +182,10 @@ export function SlidingCardCarousel({
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              onClick={goToNext}
+              onClick={(e) => {
+                e.stopPropagation()
+                goToNext()
+              }}
               className="absolute right-6 top-1/2 -translate-y-1/2 z-20 p-3 sm:p-4 bg-black/30 backdrop-blur-sm border border-white/20 rounded-full text-white hover:bg-black/50 hover:border-white/40 transition-all duration-300 group"
               aria-label="Next slide"
             >
@@ -190,7 +202,10 @@ export function SlidingCardCarousel({
                 key={index}
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={() => goToSlide(index)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  goToSlide(index)
+                }}
                 className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full transition-all duration-300 ${
                   index === currentSlide 
                     ? 'bg-[#F7DD0F] shadow-lg' 
