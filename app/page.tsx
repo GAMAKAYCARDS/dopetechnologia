@@ -31,7 +31,7 @@ import {
 import LazyAIChat from "@/components/lazy-ai-chat"
 import SEOOptimizer, { defaultStructuredData } from "@/components/seo-optimizer"
 import SupabaseCheckout from "@/components/supabase-checkout"
-import { getProducts, type Product } from "@/lib/products-data"
+import { getProducts, getDopePicks, getWeeklyPicks, type Product } from "@/lib/products-data"
 import { useCart } from "@/contexts/cart-context"
 
 // Product type is now imported from lib/products-data
@@ -42,6 +42,8 @@ export default function DopeTechEcommerce() {
   const { videoUrl, loading: videoLoading } = useVideoUrl()
   const [scrollY, setScrollY] = useState(0)
   const [products, setProducts] = useState<Product[]>([])
+  const [dopePicks, setDopePicks] = useState<Product[]>([])
+  const [weeklyPicks, setWeeklyPicks] = useState<Product[]>([])
   
   // Fluid navigation hooks
   const { navigateWithTransition, isNavigating } = useFluidNavigation()
@@ -152,6 +154,64 @@ export default function DopeTechEcommerce() {
     }
 
     fetchProducts()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  // Fetch dope picks (random selection of max 6 products)
+  useEffect(() => {
+    let isMounted = true
+
+    const fetchDopePicks = async () => {
+      try {
+        console.log('🔄 Fetching dope picks from Supabase...')
+        
+        const dopePicksData = await getDopePicks(6)
+        
+        if (isMounted) {
+          console.log('🎯 Dope picks fetched:', dopePicksData.length)
+          setDopePicks(dopePicksData)
+        }
+      } catch (error) {
+        console.error('❌ Error fetching dope picks:', error)
+        if (isMounted) {
+          setDopePicks([])
+        }
+      }
+    }
+
+    fetchDopePicks()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  // Fetch weekly picks (random selection of max 4 products)
+  useEffect(() => {
+    let isMounted = true
+
+    const fetchWeeklyPicks = async () => {
+      try {
+        console.log('🔄 Fetching weekly picks from Supabase...')
+        
+        const weeklyPicksData = await getWeeklyPicks(4)
+        
+        if (isMounted) {
+          console.log('📅 Weekly picks fetched:', weeklyPicksData.length)
+          setWeeklyPicks(weeklyPicksData)
+        }
+      } catch (error) {
+        console.error('❌ Error fetching weekly picks:', error)
+        if (isMounted) {
+          setWeeklyPicks([])
+        }
+      }
+    }
+
+    fetchWeeklyPicks()
 
     return () => {
       isMounted = false
@@ -913,14 +973,14 @@ export default function DopeTechEcommerce() {
                )}
              </div>
 
-            {/* Dope Picks Section - Now in main content area */}
+            {/* Dope Picks Section - Randomly selected products (max 6) */}
             <div className="w-full mx-auto mt-6 sm:mt-8 md:mt-10 mb-6 sm:mb-8 md:mb-10 animate-fade-in-up stagger-4">
               <div className="text-center mb-4 sm:mb-6">
                 <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3">
                   Dope <span className="text-[#F7DD0F]">Picks</span>
                 </h2>
                 <p className="text-sm sm:text-base md:text-lg text-gray-400">
-                  Latest dope drops
+                  Handpicked for you
                 </p>
               </div>
               
@@ -953,7 +1013,7 @@ export default function DopeTechEcommerce() {
                   {/* Continuous Marquee Row */}
                   <div className="flex animate-marquee space-x-4 sm:space-x-6 md:space-x-8 min-w-max">
                     {/* First set of products */}
-                    {products.filter((p: any) => !p.hidden_on_home).map((product, index) => (
+                    {dopePicks.map((product, index) => (
                       <div 
                         key={`marquee-first-${product.id}`} 
                         className="group relative flex-shrink-0"
@@ -984,7 +1044,7 @@ export default function DopeTechEcommerce() {
                     ))}
                     
                     {/* Duplicate set for seamless loop */}
-                    {products.filter((p: any) => !p.hidden_on_home).map((product, index) => (
+                    {dopePicks.map((product, index) => (
                       <div 
                         key={`marquee-second-${product.id}`} 
                         className="group relative flex-shrink-0"
@@ -1016,12 +1076,7 @@ export default function DopeTechEcommerce() {
                   </div>
                 </div>
                 
-                {/* Scroll Hint */}
-                <div className="text-center mt-2 text-xs text-gray-500 scroll-hint">
-                  <span className="hidden sm:inline">← Drag to scroll • </span>
-                  <span className="sm:hidden">← Swipe to scroll • </span>
-                  Auto-scrolls when idle
-                </div>
+
               </div>
             </div>
             {/* Dope Categories Header */}
@@ -1199,7 +1254,7 @@ export default function DopeTechEcommerce() {
             
             {/* 2x2 Grid Layout - 2x Bigger than Marquee */}
             <div className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
-                             {products.filter((p: any) => !p.hidden_on_home).slice(0, 4).map((product, index) => (
+                             {weeklyPicks.map((product, index) => (
                  <div key={`weekly-pick-${product.id}`} className="group relative animate-fade-in-up product-card-fluid scroll-animate" style={{ animationDelay: `${index * 0.1}s` }}>
                    <div 
                      className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-white/5 to-white/10 border-0 sm:border sm:border-white/10 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-rotate-1 cursor-pointer"

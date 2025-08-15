@@ -81,4 +81,58 @@ export async function getProductsByCategory(category: string): Promise<Product[]
   }
 }
 
+// Get random dope picks (maximum 6 products)
+export async function getDopePicks(maxCount: number = 6): Promise<Product[]> {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('hidden_on_home', false)
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.error('❌ Supabase error:', error);
+      throw error;
+    }
+
+    if (!data || data.length === 0) {
+      return [];
+    }
+
+    // Randomly shuffle the products and take up to maxCount
+    const shuffled = [...data].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, Math.min(maxCount, shuffled.length));
+  } catch (error) {
+    console.error('❌ Error fetching dope picks:', error);
+    return [];
+  }
+}
+
+// Get random weekly picks (maximum 4 products)
+export async function getWeeklyPicks(maxCount: number = 4): Promise<Product[]> {
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('hidden_on_home', false)
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.error('❌ Supabase error:', error);
+      throw error;
+    }
+
+    if (!data || data.length === 0) {
+      return [];
+    }
+
+    // Randomly shuffle the products and take up to maxCount
+    const shuffled = [...data].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, Math.min(maxCount, shuffled.length));
+  } catch (error) {
+    console.error('❌ Error fetching weekly picks:', error);
+    return [];
+  }
+}
+
  
