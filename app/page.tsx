@@ -9,6 +9,7 @@ import { EnhancedHeader } from "@/components/enhanced-header"
 import { EnhancedFooter } from "@/components/enhanced-footer"
 import { useHeroCarousel } from "@/hooks/use-hero-carousel"
 import { PageTransition, useFluidNavigation, useScrollAnimation, useSmoothScroll } from "@/components/page-transition"
+import { DraggableMarquee } from "@/components/draggable-marquee"
 import {
   Headphones,
   Keyboard,
@@ -802,10 +803,10 @@ export default function DopeTechEcommerce() {
         </div>
       )}
 
-      {/* Enhanced Mobile Navigation */}
+      {/* Enhanced Frosted Glass Navigation */}
       <header className="fixed top-0 left-0 right-0 z-50 dopetech-nav animate-fade-in-down">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3">
-          <nav className="flex items-center justify-between h-auto min-h-16">
+        <div className="container-max py-4">
+          <nav className="flex items-center justify-between h-auto min-h-20">
             {/* Left Side - Logo */}
             <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3 min-w-0 flex-1 pt-1">
                               <img 
@@ -828,7 +829,7 @@ export default function DopeTechEcommerce() {
             </div>
 
             {/* Right Side - Controls */}
-            <div className="flex items-center justify-end space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-5 flex-shrink-0 pt-1">
+            <div className="flex items-center justify-end space-x-3 sm:space-x-4 md:space-x-5 lg:space-x-6 flex-shrink-0 pt-1">
               {/* Search Toggle */}
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
@@ -982,16 +983,16 @@ export default function DopeTechEcommerce() {
         </div>
       </header>
 
-             {/* Welcome Section - Mobile Optimized */}
-       <section className="safe-top pb-4 sm:pb-8 md:pb-12 relative mobile-hero section-fade-in" style={{ background: 'linear-gradient(135deg, #000000 0%, #1a1a0a 50%, #000000 100%)', paddingTop: headerOffset }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+             {/* Welcome Section - Enhanced Spacing */}
+       <section className="safe-top section-padding relative mobile-hero section-fade-in" style={{ background: 'linear-gradient(135deg, #000000 0%, #1a1a0a 50%, #000000 100%)', paddingTop: headerOffset }}>
+        <div className="container-max">
           {/* Page Header */}
           <div className="text-center mb-4 sm:mb-6 md:mb-8">
             {/* Hero heading removed - now in navigation */}
             {/* Tagline removed - now in navigation */}
             
                          {/* Hero Sliding Card Carousel */}
-             <div className="w-full mx-auto mt-3 sm:mt-4 md:mt-6 lg:mt-8 mb-3 sm:mb-4 md:mb-6 lg:mb-6 animate-fade-in-up stagger-3">
+             <div className="w-full mx-auto mt-6 sm:mt-8 md:mt-10 lg:mt-12 mb-6 sm:mb-8 md:mb-10 lg:mb-12 animate-fade-in-up stagger-3">
                {heroLoading ? (
                  <div className="flex items-center justify-center h-64 bg-gradient-to-br from-gray-900 to-black rounded-2xl">
                    <div className="text-center">
@@ -1004,134 +1005,50 @@ export default function DopeTechEcommerce() {
                )}
              </div>
 
-            {/* Dope Picks Section - Randomly selected products (max 6) */}
-            <div className="w-full mx-auto mt-6 sm:mt-8 md:mt-10 mb-6 sm:mb-8 md:mb-10 animate-fade-in-up stagger-4">
-              <div className="text-center mb-4 sm:mb-6">
-                <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3">
-                  Dope <span className="text-[#F7DD0F]">Picks</span>
+            {/* Dope Picks Section - Enhanced Typography */}
+            <div className="w-full mx-auto mt-8 sm:mt-10 md:mt-12 mb-8 sm:mb-10 md:mb-12 animate-fade-in-up stagger-4">
+              <div className="text-center mb-8 sm:mb-12">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 text-shadow">
+                  Dope <span className="text-gradient">Picks</span>
                 </h2>
-                <p className="text-sm sm:text-base md:text-lg text-gray-400">
+                <p className="text-lg sm:text-xl md:text-2xl text-gray-300 font-medium">
                   Handpicked for you
                 </p>
               </div>
               
-              {/* Marquee Layout - All Devices */}
-              <div className="relative overflow-hidden cv-auto">
-                
-                <div 
-                  className="flex space-x-4 sm:space-x-6 md:space-x-8 overflow-hidden pb-4"
-                  onMouseEnter={() => {
-                    const marquee = document.querySelector('.animate-marquee') as HTMLElement;
-                    if (marquee) marquee.style.animationPlayState = 'paused';
-                  }}
-                  onMouseLeave={() => {
-                    const marquee = document.querySelector('.animate-marquee') as HTMLElement;
-                    if (marquee) marquee.style.animationPlayState = 'running';
-                  }}
-                  onTouchStart={() => {
-                    const marquee = document.querySelector('.animate-marquee') as HTMLElement;
-                    if (marquee) marquee.style.animationPlayState = 'paused';
-                  }}
-                  onTouchEnd={() => {
-                    setTimeout(() => {
-                      const marquee = document.querySelector('.animate-marquee') as HTMLElement;
-                      if (marquee) marquee.style.animationPlayState = 'running';
-                    }, 500);
-                  }}
-                  role="region"
-                  aria-label="Product carousel - auto-scrolling marquee"
-                >
-                  {/* Continuous Marquee Row */}
-                  <div className="flex animate-marquee space-x-4 sm:space-x-6 md:space-x-8 min-w-max">
-                    {/* First set of products */}
-                    {dopePicks.map((product, index) => (
-                      <div 
-                        key={`marquee-first-${product.id}`} 
-                        className="group relative flex-shrink-0"
-                      >
-                        <div className="relative overflow-hidden rounded-2xl w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 bg-gradient-to-br from-white/5 to-white/10 border border-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                          <img
-                            src={product.image_url}
-                            alt={product.name}
-                            className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110 group-hover:rotate-1"
-                          />
-                          
-                          {/* Gradient Overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          
-                          {/* Product Info Overlay */}
-                          <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 md:p-5 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                            <h3 className="text-white font-bold text-sm sm:text-base md:text-lg mb-2 line-clamp-2">{product.name}</h3>
-                            <p className="text-[#F7DD0F] font-bold text-sm sm:text-base md:text-lg mb-3">Rs {product.price}</p>
-                            <button
-                              onClick={() => handleAddToCartWithTracking(product)}
-                              className="bg-[#F7DD0F] text-black px-3 py-2 sm:px-4 sm:py-2.5 rounded-full font-semibold hover:bg-[#F7DD0F]/90 transition-all duration-200 hover:scale-105 shadow-lg text-xs sm:text-sm w-full btn-fluid"
-                            >
-                              Add to Cart
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    
-                    {/* Duplicate set for seamless loop */}
-                    {dopePicks.map((product, index) => (
-                      <div 
-                        key={`marquee-second-${product.id}`} 
-                        className="group relative flex-shrink-0"
-                      >
-                        <div className="relative overflow-hidden rounded-2xl w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 bg-gradient-to-br from-white/5 to-white/10 border border-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                          <img
-                            src={product.image_url}
-                            alt={product.name}
-                            className="w-full h-full object-cover transition-all duration-300 group-hover:scale-110 group-hover:rotate-1"
-                          />
-                          
-                          {/* Gradient Overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          
-                          {/* Product Info Overlay */}
-                          <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 md:p-5 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                            <h3 className="text-white font-bold text-sm sm:text-base md:text-lg mb-2 line-clamp-2">{product.name}</h3>
-                            <p className="text-[#F7DD0F] font-bold text-sm sm:text-base md:text-lg mb-3">Rs {product.price}</p>
-                            <button
-                              onClick={() => handleAddToCartWithTracking(product)}
-                              className="bg-[#F7DD0F] text-black px-3 py-2 sm:px-4 sm:py-2.5 rounded-full font-semibold hover:bg-[#F7DD0F]/90 transition-all duration-200 hover:scale-105 shadow-lg text-xs sm:text-sm w-full btn-fluid"
-                            >
-                              Add to Cart
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-
-              </div>
+              {/* Draggable Marquee */}
+              <DraggableMarquee
+                products={dopePicks}
+                onAddToCart={handleAddToCartWithTracking}
+                className="cv-auto"
+                autoScroll={true}
+                scrollSpeed={25}
+                pauseOnHover={true}
+                showScrollHint={true}
+              />
             </div>
             {/* Dope Categories Header */}
-            <div className="text-center mb-4 sm:mb-6 animate-fade-in-up stagger-4">
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3">
-                Dope <span className="text-[#F7DD0F]">Categories</span>
+            <div className="text-center mb-8 sm:mb-12 animate-fade-in-up stagger-4">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 text-shadow">
+                Dope <span className="text-gradient">Categories</span>
               </h2>
-              <p className="text-sm sm:text-base md:text-lg text-gray-400">
+              <p className="text-lg sm:text-xl md:text-2xl text-gray-300 font-medium">
                 Filter by your favorite tech categories
               </p>
             </div>
 
-            {/* Category Filter - Mobile Optimized with Smaller Touch Targets */}
-            <div ref={categorySectionRef} className="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 mb-6 sm:mb-8 md:mb-10 px-2 animate-fade-in-up stagger-5 hero-spacing">
+            {/* Category Filter - Enhanced Spacing */}
+            <div ref={categorySectionRef} className="flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-5 mb-8 sm:mb-10 md:mb-12 px-4 animate-fade-in-up stagger-5 hero-spacing">
               {/* First row */}
-              <div className="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 w-full">
+              <div className="flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-6 w-full">
                 {categories.slice(0, 3).map((category, index) => (
                   <div key={category.id} className="relative animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
                     <button
                       onClick={() => handleCategoryClick(category.id)}
-                      className={`flex items-center space-x-2 px-3 sm:px-4 md:px-5 py-2 sm:py-3 md:py-4 rounded-full transition-all duration-200 cursor-pointer text-xs sm:text-sm md:text-base touch-target hover-scale hover-glow min-h-[36px] category-transition btn-fluid ${
+                      className={`flex items-center space-x-3 px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 rounded-full transition-all duration-300 cursor-pointer text-sm sm:text-base md:text-lg touch-target hover-scale hover-glow min-h-[48px] category-transition btn-fluid focus-ring ${
                         selectedCategory === category.id
-                          ? "bg-[#F7DD0F] text-black shadow-lg animate-pulse font-bold"
-                          : "bg-white/5 backdrop-blur-md border-0 sm:border sm:border-white/20 hover:bg-white/10 sm:hover:border-white/30 font-medium shadow-lg"
+                          ? "bg-[#F7DD0F] text-black shadow-xl animate-glow font-bold"
+                          : "glass hover:bg-white/15 hover:scale-105 font-medium"
                       }`}
                       aria-label={`Filter by ${category.name}`}
                     >
@@ -1139,11 +1056,11 @@ export default function DopeTechEcommerce() {
                       <div className={`flex-shrink-0 ${
                         selectedCategory === category.id ? "text-black" : "text-[#F7DD0F]"
                       }`}>
-                        {renderCategoryIcon(category.icon, "w-4 h-4 sm:w-5 sm:h-5")}
+                        {renderCategoryIcon(category.icon, "w-5 h-5 sm:w-6 sm:h-6")}
                       </div>
                       
                       {/* Category Name */}
-                      <span>{category.name}</span>
+                      <span className="font-medium">{category.name}</span>
                     </button>
                   </div>
                 ))}
@@ -1153,15 +1070,15 @@ export default function DopeTechEcommerce() {
               <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent my-2 sm:my-3 opacity-50"></div>
               
               {/* Second row */}
-              <div className="flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 w-full">
+              <div className="flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-6 w-full">
                 {categories.slice(3).map((category, index) => (
                   <div key={category.id} className="relative animate-fade-in-up" style={{ animationDelay: `${(index + 3) * 0.1}s` }}>
                     <button
                       onClick={() => handleCategoryClick(category.id)}
-                      className={`flex items-center space-x-2 px-3 sm:px-4 md:px-5 py-2 sm:py-3 md:py-4 rounded-full transition-all duration-200 cursor-pointer text-xs sm:text-sm md:text-base touch-target hover-scale hover-glow min-h-[36px] category-transition btn-fluid ${
+                      className={`flex items-center space-x-3 px-6 sm:px-8 md:px-10 py-4 sm:py-5 md:py-6 rounded-full transition-all duration-300 cursor-pointer text-sm sm:text-base md:text-lg touch-target hover-scale hover-glow min-h-[48px] category-transition btn-fluid focus-ring ${
                         selectedCategory === category.id
-                          ? "bg-[#F7DD0F] text-black shadow-lg animate-pulse font-bold"
-                          : "bg-white/5 backdrop-blur-md border-0 sm:border sm:border-white/20 hover:bg-white/10 sm:hover:border-white/30 font-medium shadow-lg"
+                          ? "bg-[#F7DD0F] text-black shadow-xl animate-glow font-bold"
+                          : "glass hover:bg-white/15 hover:scale-105 font-medium"
                       }`}
                       aria-label={`Filter by ${category.name}`}
                     >
@@ -1169,11 +1086,11 @@ export default function DopeTechEcommerce() {
                       <div className={`flex-shrink-0 ${
                         selectedCategory === category.id ? "text-black" : "text-[#F7DD0F]"
                       }`}>
-                        {renderCategoryIcon(category.icon, "w-4 h-4 sm:w-5 sm:h-5")}
+                        {renderCategoryIcon(category.icon, "w-5 h-5 sm:w-6 sm:h-6")}
                       </div>
                       
                       {/* Category Name */}
-                      <span>{category.name}</span>
+                      <span className="font-medium">{category.name}</span>
                     </button>
                   </div>
                 ))}
@@ -1181,10 +1098,10 @@ export default function DopeTechEcommerce() {
             </div>
           </div>
 
-          {/* Products Grid - Enhanced Mobile & Desktop UX */}
+          {/* Products Grid - Enhanced Spacing */}
           <div 
             data-products-section
-            className={`grid gap-4 sm:gap-6 md:gap-8 mt-6 sm:mt-8 md:mt-10 cv-auto ${
+            className={`grid gap-6 sm:gap-8 md:gap-10 mt-8 sm:mt-10 md:mt-12 cv-auto ${
               viewMode === "grid" 
                 ? "grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" 
                 : "grid-cols-1"
@@ -1192,7 +1109,7 @@ export default function DopeTechEcommerce() {
             {filteredProducts.map((product, index) => (
               <div key={product.id} data-product-id={product.id} className="group animate-fade-in-up mobile-product-card hover-lift product-card-fluid scroll-animate" style={{ animationDelay: `${index * 0.1}s` }}>
                                 <div 
-                                  className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer"
+                                  className="relative overflow-hidden rounded-2xl card-elevated cursor-pointer"
                                   onClick={() => router.push(`/product/${product.id}`)}
                                 >
                   {/* Product Image with Enhanced Hover Effects */}
@@ -1270,21 +1187,21 @@ export default function DopeTechEcommerce() {
         </div>
       </section>
 
-             {/* Dope Weekly Picks Section - 2x2 Grid */}
-       <section className="pt-8 sm:pt-12 pb-20 sm:pb-24 overflow-hidden relative section-slide-in" style={{ background: 'linear-gradient(135deg, #000000 0%, #1a1a0a 50%, #000000 100%)' }}>
+             {/* Dope Weekly Picks Section - Enhanced Typography */}
+       <section className="pt-12 sm:pt-16 pb-24 sm:pb-32 overflow-hidden relative section-slide-in" style={{ background: 'linear-gradient(135deg, #000000 0%, #1a1a0a 50%, #000000 100%)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="w-full mx-auto mt-8 sm:mt-10 md:mt-12 mb-6 sm:mb-8 md:mb-10 animate-fade-in-up stagger-5">
-            <div className="text-center mb-4 sm:mb-6">
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3">
-                Dope <span className="text-[#F7DD0F]">Weekly Picks</span>
+          <div className="w-full mx-auto mt-10 sm:mt-12 md:mt-16 mb-8 sm:mb-10 md:mb-12 animate-fade-in-up stagger-5">
+            <div className="text-center mb-8 sm:mb-12">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 text-shadow">
+                Dope <span className="text-gradient">Weekly Picks</span>
               </h2>
-              <p className="text-sm sm:text-base md:text-lg text-gray-400">
+              <p className="text-lg sm:text-xl md:text-2xl text-gray-300 font-medium">
                 This week's featured selections
               </p>
             </div>
             
-            {/* 2x2 Grid Layout - 2x Bigger than Marquee */}
-            <div className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-8 max-w-5xl mx-auto">
+            {/* 2x2 Grid Layout - Enhanced Spacing */}
+            <div className="grid grid-cols-2 gap-6 sm:gap-8 md:gap-10 max-w-6xl mx-auto">
                              {weeklyPicks.map((product, index) => (
                  <div key={`weekly-pick-${product.id}`} className="group relative animate-fade-in-up product-card-fluid scroll-animate" style={{ animationDelay: `${index * 0.1}s` }}>
                    <div 
@@ -1336,11 +1253,11 @@ export default function DopeTechEcommerce() {
        <section className="pt-8 sm:pt-12 pb-20 sm:pb-24 overflow-hidden relative section-fade-in" style={{ background: 'linear-gradient(135deg, #000000 0%, #1a1a0a 50%, #000000 100%)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
-          <div className="text-center mb-6 sm:mb-8 md:mb-10 animate-fade-in-up">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3">
-              Dope <span className="text-[#F7DD0F]">Recommendations</span>
+          <div className="text-center mb-8 sm:mb-12 animate-fade-in-up">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 text-shadow">
+              Dope <span className="text-gradient">Recommendations</span>
             </h2>
-            <p className="text-sm sm:text-base md:text-lg text-gray-400">
+            <p className="text-base sm:text-lg md:text-xl text-gray-400">
               Grab these and more on our Instagram
             </p>
           </div>
@@ -1481,27 +1398,27 @@ export default function DopeTechEcommerce() {
         </div>
       )}
 
-      {/* Footer - Mobile Optimized */}
-      <footer className="bg-black py-4 sm:py-6 border-t-2 border-[#F7DD0F]">
+      {/* Footer - Enhanced Spacing */}
+      <footer className="bg-black py-8 sm:py-12 border-t-2 border-[#F7DD0F]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-3 mb-6 md:mb-0">
+            <div className="flex items-center space-x-4 mb-8 md:mb-0">
                               <img 
                   src={logoLoading ? "/logo/simple-logo.svg" : logoUrl} 
                   alt="DopeTech" 
-                  className="w-10 h-10 sm:w-12 sm:h-12 logo-adaptive" 
+                  className="w-12 h-12 sm:w-14 sm:h-14 logo-adaptive" 
                 />
-              <span className="text-xs sm:text-sm text-white jakarta-light">© 2025 DopeTech Nepal. All rights reserved.</span>
+              <span className="text-sm sm:text-base text-white jakarta-light font-medium">© 2025 DopeTech Nepal. All rights reserved.</span>
             </div>
 
-            <div className="flex space-x-6 sm:space-x-8">
-              <a href="#" className="text-xs sm:text-sm text-gray-400 hover:text-[#F7DD0F] transition-colors cursor-hover jakarta-light">
+            <div className="flex space-x-8 sm:space-x-10">
+              <a href="#" className="text-sm sm:text-base text-gray-400 hover:text-[#F7DD0F] transition-colors cursor-hover jakarta-light font-medium">
                 Privacy Policy
               </a>
-              <a href="#" className="text-xs sm:text-sm text-gray-400 hover:text-[#F7DD0F] transition-colors cursor-hover jakarta-light">
+              <a href="#" className="text-sm sm:text-base text-gray-400 hover:text-[#F7DD0F] transition-colors cursor-hover jakarta-light font-medium">
                 Terms of Use
               </a>
-              <a href="#" className="text-xs sm:text-sm text-gray-400 hover:text-[#F7DD0F] transition-colors cursor-hover jakarta-light">
+              <a href="#" className="text-sm sm:text-base text-gray-400 hover:text-[#F7DD0F] transition-colors cursor-hover jakarta-light font-medium">
                 Support
               </a>
             </div>

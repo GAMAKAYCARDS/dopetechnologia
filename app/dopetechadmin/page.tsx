@@ -55,7 +55,7 @@ const ProductCard = React.memo(({
   onDelete: (id: number) => void
   isEditing: boolean
 }) => (
-  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300">
+  <div className="group relative overflow-hidden rounded-2xl card-elevated">
     {/* Product Image with Enhanced Hover Effects */}
     <div className="relative image-container overflow-hidden rounded-2xl aspect-square">
       <img
@@ -94,16 +94,16 @@ const ProductCard = React.memo(({
             <button
               onClick={() => onEdit(product)}
               disabled={isEditing}
-              className="p-1.5 bg-[#F7DD0F]/20 hover:bg-[#F7DD0F]/30 rounded-lg transition-colors text-[#F7DD0F] disabled:opacity-50"
+              className="p-2 bg-[#F7DD0F]/20 hover:bg-[#F7DD0F]/30 rounded-lg transition-all duration-300 text-[#F7DD0F] disabled:opacity-50 hover:scale-110 focus-ring"
             >
-              <Edit className="w-3 h-3" />
+              <Edit className="w-4 h-4" />
             </button>
             <button
               onClick={() => onDelete(product.id)}
               disabled={isEditing}
-              className="p-1.5 bg-red-500/20 hover:bg-red-500/30 rounded-lg transition-colors text-red-400 disabled:opacity-50"
+              className="p-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg transition-all duration-300 text-red-400 disabled:opacity-50 hover:scale-110 focus-ring"
             >
-              <Trash2 className="w-3 h-3" />
+              <Trash2 className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -400,29 +400,35 @@ export default function DopeTechAdmin() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 gradient-bg-dopetech">
-        <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 max-w-md w-full">
+        <div className="card-elevated p-8 max-w-md w-full animate-fade-in-up">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-[#F7DD0F] mb-2">DopeTech Admin</h1>
-            <p className="text-gray-400">Enter password to access admin panel</p>
+            <div className="mb-6">
+              <div className="w-16 h-16 bg-[#F7DD0F]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Lock className="w-8 h-8 text-[#F7DD0F]" />
+              </div>
+              <h1 className="text-4xl font-bold text-gradient mb-3">DopeTech Admin</h1>
+              <p className="text-gray-300 text-lg">Enter password to access admin panel</p>
+            </div>
           </div>
           
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium mb-2">Password</label>
+              <label className="block text-sm font-semibold mb-3 text-gray-200">Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F] text-white"
+                className="input-glass w-full"
                 placeholder="Enter admin password"
               />
             </div>
             
             <button
               onClick={handleLogin}
-              className="w-full px-4 py-3 bg-[#F7DD0F] text-black rounded-lg hover:bg-[#F7DD0F]/90 transition-colors font-medium"
+              className="btn-primary w-full"
             >
+              <Lock className="w-5 h-5 mr-2" />
               Login
             </button>
           </div>
@@ -433,25 +439,30 @@ export default function DopeTechAdmin() {
 
   return (
     <div className="min-h-screen text-white gradient-bg-dopetech">
-      {/* Header */}
-      <div className="bg-white/5 backdrop-blur-lg border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-[#F7DD0F]">DopeTech Admin</h1>
-              <div className="flex items-center space-x-2 text-sm text-gray-400">
-                <Package className="w-4 h-4" />
-                <span>{products.length} Products</span>
+      {/* Enhanced Header */}
+      <div className="glass-dark border-b border-white/10 shadow-lg">
+        <div className="container-max">
+          <div className="flex items-center justify-between h-20">
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-[#F7DD0F]/20 rounded-xl flex items-center justify-center">
+                  <Package className="w-6 h-6 text-[#F7DD0F]" />
+                </div>
+                <h1 className="text-3xl font-bold text-gradient">DopeTech Admin</h1>
+              </div>
+              <div className="flex items-center space-x-3 px-4 py-2 glass rounded-xl">
+                <Package className="w-5 h-5 text-[#F7DD0F]" />
+                <span className="text-gray-200 font-semibold">{products.length} Products</span>
               </div>
             </div>
             
             <div className="flex items-center space-x-4">
               <button
                 onClick={handleLogout}
-                className="flex items-center space-x-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors text-red-400"
+                className="flex items-center space-x-3 px-6 py-3 bg-red-500/10 hover:bg-red-500/20 rounded-xl transition-all duration-300 text-red-400 hover:scale-105 focus-ring"
               >
-                <LogOut className="w-4 h-4" />
-                <span>Logout</span>
+                <LogOut className="w-5 h-5" />
+                <span className="font-semibold">Logout</span>
               </button>
             </div>
           </div>
@@ -459,42 +470,44 @@ export default function DopeTechAdmin() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Tab Navigation */}
-        <div className="flex items-center space-x-1 bg-white/5 rounded-lg p-1 mb-8">
-          <button
-            onClick={() => setActiveTab("products")}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
-              activeTab === "products"
-                ? "bg-[#F7DD0F] text-black"
-                : "text-gray-400 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <Package className="w-4 h-4" />
-            <span>Products</span>
-          </button>
-          <button
-            onClick={() => setActiveTab("assets")}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
-              activeTab === "assets"
-                ? "bg-[#F7DD0F] text-black"
-                : "text-gray-400 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <FileImage className="w-4 h-4" />
-            <span>Assets</span>
-          </button>
-          <button
-            onClick={() => setActiveTab("carousel")}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
-              activeTab === "carousel"
-                ? "bg-[#F7DD0F] text-black"
-                : "text-gray-400 hover:text-white hover:bg-white/5"
-            }`}
-          >
-            <ImageIcon className="w-4 h-4" />
-            <span>Carousel Editor</span>
-          </button>
+              <div className="container-max section-padding">
+        {/* Enhanced Tab Navigation */}
+        <div className="glass rounded-2xl p-2 mb-8">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setActiveTab("products")}
+              className={`flex items-center space-x-3 px-6 py-4 rounded-xl transition-all duration-300 font-semibold focus-ring ${
+                activeTab === "products"
+                  ? "bg-[#F7DD0F] text-black shadow-lg"
+                  : "text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105"
+              }`}
+            >
+              <Package className="w-5 h-5" />
+              <span>Products</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("assets")}
+              className={`flex items-center space-x-3 px-6 py-4 rounded-xl transition-all duration-300 font-semibold focus-ring ${
+                activeTab === "assets"
+                  ? "bg-[#F7DD0F] text-black shadow-lg"
+                  : "text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105"
+              }`}
+            >
+              <FileImage className="w-5 h-5" />
+              <span>Assets</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("carousel")}
+              className={`flex items-center space-x-3 px-6 py-4 rounded-xl transition-all duration-300 font-semibold focus-ring ${
+                activeTab === "carousel"
+                  ? "bg-[#F7DD0F] text-black shadow-lg"
+                  : "text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105"
+              }`}
+            >
+              <ImageIcon className="w-5 h-5" />
+              <span>Carousel Editor</span>
+            </button>
+          </div>
         </div>
 
         {/* Error Display */}
@@ -507,53 +520,65 @@ export default function DopeTechAdmin() {
         {/* Products Tab */}
         {activeTab === "products" && (
           <>
-            {/* Controls */}
-            <div className="flex flex-col sm:flex-row items-center justify-between mb-8 space-y-4 sm:space-y-0">
-              <div className="flex items-center space-x-4">
-                <button
-                  onClick={() => setIsAddingProduct(true)}
-                  className="flex items-center space-x-2 px-4 py-2 bg-[#F7DD0F] text-black rounded-lg hover:bg-[#F7DD0F]/90 transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add Product</span>
-                </button>
-              </div>
-              
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <input
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F] text-white"
-                  />
+            {/* Enhanced Controls */}
+            <div className="glass rounded-2xl p-6 mb-8">
+              <div className="flex flex-col lg:flex-row items-center justify-between space-y-4 lg:space-y-0">
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={() => setIsAddingProduct(true)}
+                    className="btn-primary"
+                  >
+                    <Plus className="w-5 h-5 mr-2" />
+                    <span>Add Product</span>
+                  </button>
+                  
+                  <div className="flex items-center space-x-3 px-4 py-2 glass rounded-xl">
+                    <Package className="w-5 h-5 text-[#F7DD0F]" />
+                    <span className="text-gray-200 font-semibold">{filteredProducts.length} Products</span>
+                  </div>
                 </div>
                 
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F7DD0F] text-white"
-                >
-                  {categories.map(category => (
-                    <option key={category} value={category}>
-                      {category === "all" ? "All Categories" : category}
-                    </option>
-                  ))}
-                </select>
+                <div className="flex items-center space-x-4">
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <input
+                      type="text"
+                      placeholder="Search products..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="input-glass pl-12 pr-4 w-64"
+                    />
+                  </div>
+                  
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="input-glass px-4 py-3"
+                  >
+                    {categories.map(category => (
+                      <option key={category} value={category}>
+                        {category === "all" ? "All Categories" : category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 
-        {/* Add Product Modal */}
+        {/* Enhanced Add Product Modal */}
         {isAddingProduct && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-            <div className="bg-black/80 backdrop-blur-lg rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-white/10">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold text-[#F7DD0F]">Add New Product</h2>
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-50">
+            <div className="card-elevated p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto animate-scale-in">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-[#F7DD0F]/20 rounded-xl flex items-center justify-center">
+                    <Plus className="w-6 h-6 text-[#F7DD0F]" />
+                  </div>
+                  <h2 className="text-3xl font-bold text-gradient">Add New Product</h2>
+                </div>
                 <button
                   onClick={() => setIsAddingProduct(false)}
-                  className="text-gray-400 hover:text-white"
+                  className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300 focus-ring"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -1115,29 +1140,38 @@ export default function DopeTechAdmin() {
           </>
         )}
 
-        {/* Assets Tab */}
+        {/* Enhanced Assets Tab */}
         {activeTab === "assets" && (
           <div className="space-y-8">
-            {/* Header Controls */}
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-[#F7DD0F]">Asset Management</h2>
-              <button
-                onClick={refreshAssets}
-                disabled={assetsLoading}
-                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-white/5 to-white/10 backdrop-blur-sm border border-white/10 rounded-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 text-white"
-              >
-                <RefreshCw className={`w-4 h-4 text-[#F7DD0F] ${assetsLoading ? 'animate-spin' : ''}`} />
-                <span>Refresh</span>
-              </button>
+            {/* Enhanced Header Controls */}
+            <div className="glass rounded-2xl p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-[#F7DD0F]/20 rounded-xl flex items-center justify-center">
+                    <FileImage className="w-6 h-6 text-[#F7DD0F]" />
+                  </div>
+                  <h2 className="text-3xl font-bold text-gradient">Asset Management</h2>
+                </div>
+                <button
+                  onClick={refreshAssets}
+                  disabled={assetsLoading}
+                  className="flex items-center space-x-3 px-6 py-3 glass hover:bg-white/15 hover:scale-105 transition-all duration-300 text-white focus-ring disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-5 h-5 text-[#F7DD0F] ${assetsLoading ? 'animate-spin' : ''}`} />
+                  <span className="font-semibold">Refresh</span>
+                </button>
+              </div>
             </div>
 
-            {/* Current Assets Preview */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Logo Preview */}
-              <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 p-6">
-                <div className="flex items-center space-x-2 mb-4">
-                  <ImageIcon className="w-5 h-5 text-[#F7DD0F]" />
-                  <h3 className="text-lg font-semibold text-white">Current Logo</h3>
+            {/* Enhanced Current Assets Preview */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Enhanced Logo Preview */}
+              <div className="card-elevated p-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-[#F7DD0F]/20 rounded-lg flex items-center justify-center">
+                    <ImageIcon className="w-5 h-5 text-[#F7DD0F]" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white">Current Logo</h3>
                 </div>
                 {assetsLoading ? (
                   <div className="h-32 bg-gradient-to-br from-gray-800/50 to-gray-700/50 rounded-xl animate-pulse flex items-center justify-center backdrop-blur-sm border border-white/10">
@@ -1164,11 +1198,13 @@ export default function DopeTechAdmin() {
                 )}
               </div>
 
-              {/* Video Preview */}
-              <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 p-6">
-                <div className="flex items-center space-x-2 mb-4">
-                  <Video className="w-5 h-5 text-[#F7DD0F]" />
-                  <h3 className="text-lg font-semibold text-white">Current Video</h3>
+              {/* Enhanced Video Preview */}
+              <div className="card-elevated p-6">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-8 h-8 bg-[#F7DD0F]/20 rounded-lg flex items-center justify-center">
+                    <Video className="w-5 h-5 text-[#F7DD0F]" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-white">Current Video</h3>
                 </div>
                 {assetsLoading ? (
                   <div className="h-32 bg-gradient-to-br from-gray-800/50 to-gray-700/50 rounded-xl animate-pulse flex items-center justify-center backdrop-blur-sm border border-white/10">
@@ -1197,19 +1233,21 @@ export default function DopeTechAdmin() {
               </div>
             </div>
 
-            {/* Asset Upload */}
-            <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 p-6">
-              <div className="flex items-center space-x-2 mb-4">
-                <Upload className="w-5 h-5 text-[#F7DD0F]" />
-                <h3 className="text-lg font-semibold text-white">Upload New Assets</h3>
+            {/* Enhanced Asset Upload */}
+            <div className="card-elevated p-6">
+              <div className="flex items-center space-x-3 mb-6">
+                <div className="w-8 h-8 bg-[#F7DD0F]/20 rounded-lg flex items-center justify-center">
+                  <Upload className="w-5 h-5 text-[#F7DD0F]" />
+                </div>
+                <h3 className="text-xl font-semibold text-white">Upload New Assets</h3>
               </div>
               <AssetUploader />
             </div>
 
-            {/* Asset List */}
+            {/* Enhanced Asset List */}
             {assets.length > 0 && (
-              <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 p-6">
-                <h3 className="text-lg font-semibold mb-4 text-white">Uploaded Assets</h3>
+              <div className="card-elevated p-6">
+                <h3 className="text-xl font-semibold mb-6 text-white">Uploaded Assets</h3>
                 <div className="space-y-3">
                   {assets.map((asset, index) => (
                     <div
