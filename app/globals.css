@@ -1071,6 +1071,10 @@ body *::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #000000 0%, #1a1a1a 30%, #1a1a0a 50%, #1a1a1a 70%, #000000 100%);
 }
 
+.gradient-bg-dopetech {
+  background: linear-gradient(135deg, #000000 0%, #1a1a0a 50%, #000000 100%);
+}
+
 /* CSS Variables for better performance */
 :root {
   --background: oklch(1 0 0);

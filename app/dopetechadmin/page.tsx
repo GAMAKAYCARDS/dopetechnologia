@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useMemo } from "react"
+import React, { useState, useEffect, useMemo, useCallback } from "react"
 import { 
   Plus, 
   Edit, 
@@ -23,7 +23,14 @@ import {
   ArrowLeft,
   Video,
   FileImage,
-  RefreshCw
+  RefreshCw,
+  Loader2,
+  Smartphone,
+  Monitor,
+  Settings,
+  Users,
+  ShoppingCart,
+  Activity
 } from "lucide-react"
 import { getProducts, type Product } from "@/lib/products-data"
 import { supabase } from "@/lib/supabase"
@@ -36,6 +43,100 @@ interface AdminProduct extends Product {
   isEditing?: boolean
 }
 
+// Memoized product card component
+const ProductCard = React.memo(({ 
+  product, 
+  onEdit, 
+  onDelete, 
+  isEditing 
+}: { 
+  product: AdminProduct
+  onEdit: (product: Product) => void
+  onDelete: (id: number) => void
+  isEditing: boolean
+}) => (
+  <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300">
+    {/* Product Image with Enhanced Hover Effects */}
+    <div className="relative image-container overflow-hidden rounded-2xl aspect-square">
+      <img
+        src={product.image_url}
+        alt={product.name}
+        className="w-full h-full object-cover object-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-1"
+        loading="lazy"
+        decoding="async"
+      />
+      
+      {/* Gradient Overlay on Hover */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+      {/* Stock Status Badge */}
+      {product.in_stock ? (
+        <div className="absolute top-2 right-2 px-2 py-1 rounded-full text-[10px] font-medium bg-green-500/20 backdrop-blur-md text-green-100 border border-green-500/30 shadow-lg">
+          In Stock
+        </div>
+      ) : (
+        <div className="absolute top-2 right-2 px-2 py-1 rounded-full text-[10px] font-medium bg-red-500/20 backdrop-blur-md text-red-100 border border-red-500/30 shadow-lg">
+          Out of Stock
+        </div>
+      )}
+
+      {/* Product overlay content */}
+      <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+        <h3 className="text-white font-semibold text-sm line-clamp-2 mb-2 leading-snug">{product.name}</h3>
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex flex-col leading-tight">
+            <span className="text-[#F7DD0F] font-bold text-sm">Rs {product.price}</span>
+            {product.original_price > product.price && (
+              <span className="text-xs text-gray-300 line-through">Rs {product.original_price}</span>
+            )}
+          </div>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => onEdit(product)}
+              disabled={isEditing}
+              className="p-1.5 bg-[#F7DD0F]/20 hover:bg-[#F7DD0F]/30 rounded-lg transition-colors text-[#F7DD0F] disabled:opacity-50"
+            >
+              <Edit className="w-3 h-3" />
+            </button>
+            <button
+              onClick={() => onDelete(product.id)}
+              disabled={isEditing}
+              className="p-1.5 bg-red-500/20 hover:bg-red-500/30 rounded-lg transition-colors text-red-400 disabled:opacity-50"
+            >
+              <Trash2 className="w-3 h-3" />
+            </button>
+          </div>
+        </div>
+        
+        {/* Additional Info */}
+        <div className="flex items-center justify-between text-xs text-gray-300">
+          <div className="flex items-center">
+            <Star className="w-3 h-3 text-[#F7DD0F] fill-current" />
+            <span className="ml-1">{product.rating}</span>
+          </div>
+          <span className="capitalize">{product.category}</span>
+        </div>
+        
+        {/* Discount Badge */}
+        {product.discount > 0 && (
+          <div className="absolute top-2 left-2 bg-orange-500/20 backdrop-blur-md text-orange-100 border border-orange-500/30 px-2 py-1 rounded-full text-xs font-medium shadow-lg">
+            {product.discount}% OFF
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+))
+
+ProductCard.displayName = 'ProductCard'
+
+// Loading component
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center p-8">
+    <Loader2 className="w-6 h-6 animate-spin text-[#F7DD0F]" />
+  </div>
+)
+
 export default function DopeTechAdmin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [password, setPassword] = useState("")
@@ -46,6 +147,7 @@ export default function DopeTechAdmin() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [isLoading, setIsLoading] = useState(true)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   // Asset management state
   const { 
@@ -297,7 +399,7 @@ export default function DopeTechAdmin() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen gradient-bg flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 gradient-bg-dopetech">
         <div className="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10 max-w-md w-full">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-[#F7DD0F] mb-2">DopeTech Admin</h1>
@@ -330,7 +432,7 @@ export default function DopeTechAdmin() {
   }
 
   return (
-    <div className="min-h-screen gradient-bg text-white">
+    <div className="min-h-screen text-white gradient-bg-dopetech">
       {/* Header */}
       <div className="bg-white/5 backdrop-blur-lg border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -990,9 +1092,7 @@ export default function DopeTechAdmin() {
 
         {/* Products Display */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#F7DD0F]"></div>
-          </div>
+          <LoadingSpinner />
         ) : filteredProducts.length === 0 ? (
           <div className="text-center py-12">
             <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -1000,140 +1100,16 @@ export default function DopeTechAdmin() {
             <p className="text-gray-500">Try adjusting your search or category filters</p>
           </div>
         ) : (
-          <div className="space-y-6">
-            {/* Mobile Cards */}
-            <div className="lg:hidden space-y-4">
-              {filteredProducts.map((product) => (
-                <div key={product.id} className="rounded-lg p-4 border border-white/10 bg-white/5">
-                  <div className="flex items-start space-x-3 mb-3">
-                    <img src={product.image_url} alt={product.name} className="w-16 h-16 rounded object-cover flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-sm mb-1 truncate text-white">{product.name}</h3>
-                      <p className="text-gray-400 text-xs mb-2 line-clamp-2">{product.description}</p>
-                      <div className="flex items-center space-x-2 mb-2">
-                        <span className="px-2 py-1 bg-[#F7DD0F]/20 text-[#F7DD0F] rounded-full text-xs font-medium border border-[#F7DD0F]/30">{product.category}</span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${
-                          product.in_stock 
-                            ? 'bg-green-500/20 text-green-400 border-green-500/30' 
-                            : 'bg-red-500/20 text-red-400 border-red-500/30'
-                        }`}>
-                          {product.in_stock ? 'In Stock' : 'Out of Stock'}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <div className="flex items-center space-x-1">
-                            <Star className="w-3 h-3 text-[#F7DD0F] fill-current" />
-                            <span className="text-xs">{product.rating}</span>
-                            <span className="text-gray-400 text-xs">({product.reviews})</span>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold text-sm text-[#F7DD0F]">Rs {product.price}</p>
-                          {product.original_price > product.price && (
-                            <p className="text-gray-400 text-xs line-through">Rs {product.original_price}</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Mobile Actions */}
-                  <div className="flex items-center justify-end space-x-2 pt-3 border-t border-white/10">
-                    <button
-                      onClick={() => handleEditProduct(product)}
-                      className="px-3 py-2 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg transition-all duration-200 text-blue-400 text-sm flex items-center space-x-1"
-                    >
-                      <Edit className="w-4 h-4" />
-                      <span>Edit</span>
-                    </button>
-                    <button
-                      onClick={() => handleDeleteProduct(product.id)}
-                      className="px-3 py-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-all duration-200 text-red-400 text-sm flex items-center space-x-1"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      <span>Delete</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            {/* Desktop Table */}
-            <div className="hidden lg:block">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-700">
-                      <th className="text-left py-3 px-4">Product</th>
-                      <th className="text-left py-3 px-4">Category</th>
-                      <th className="text-left py-3 px-4">Price</th>
-                      <th className="text-left py-3 px-4">Rating</th>
-                      <th className="text-left py-3 px-4">Stock</th>
-                      <th className="text-left py-3 px-4">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredProducts.map((product) => (
-                      <tr key={product.id} className="border-b border-gray-800 hover:bg-white/5">
-                        <td className="py-3 px-4">
-                          <div className="flex items-center space-x-3">
-                            <img src={product.image_url} alt={product.name} className="w-10 h-10 rounded object-cover" />
-                            <div>
-                              <p className="font-medium">{product.name}</p>
-                              <p className="text-gray-400 text-sm truncate max-w-xs">{product.description}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className="px-2 py-1 bg-[#F7DD0F]/20 text-[#F7DD0F] rounded-full text-xs font-medium border border-[#F7DD0F]/30">
-                            {product.category}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div>
-                            <p className="font-medium">Rs {product.price}</p>
-                            {product.original_price > product.price && (
-                              <p className="text-gray-400 text-sm line-through">Rs {product.original_price}</p>
-                            )}
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center space-x-1">
-                            <Star className="w-4 h-4 text-[#F7DD0F] fill-current" />
-                            <span>{product.rating}</span>
-                            <span className="text-gray-400 text-sm">({product.reviews})</span>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            product.in_stock ? 'bg-green-600' : 'bg-red-600'
-                          }`}>
-                            {product.in_stock ? 'In Stock' : 'Out of Stock'}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center space-x-2">
-                            <button
-                              onClick={() => handleEditProduct(product)}
-                              className="p-2 bg-blue-500/10 hover:bg-blue-500/20 rounded-lg transition-colors text-blue-400"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteProduct(product.id)}
-                              className="p-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors text-red-400"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onEdit={handleEditProduct}
+                onDelete={handleDeleteProduct}
+                isEditing={!!editingProduct && editingProduct.id === product.id}
+              />
+            ))}
           </div>
         )}
           </>
@@ -1148,9 +1124,9 @@ export default function DopeTechAdmin() {
               <button
                 onClick={refreshAssets}
                 disabled={assetsLoading}
-                className="flex items-center space-x-2 px-4 py-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors"
+                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-white/5 to-white/10 backdrop-blur-sm border border-white/10 rounded-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 text-white"
               >
-                <RefreshCw className={`w-4 h-4 ${assetsLoading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-4 h-4 text-[#F7DD0F] ${assetsLoading ? 'animate-spin' : ''}`} />
                 <span>Refresh</span>
               </button>
             </div>
@@ -1158,49 +1134,55 @@ export default function DopeTechAdmin() {
             {/* Current Assets Preview */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Logo Preview */}
-              <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+              <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 p-6">
                 <div className="flex items-center space-x-2 mb-4">
                   <ImageIcon className="w-5 h-5 text-[#F7DD0F]" />
-                  <h3 className="text-lg font-semibold">Current Logo</h3>
+                  <h3 className="text-lg font-semibold text-white">Current Logo</h3>
                 </div>
                 {assetsLoading ? (
-                  <div className="h-32 bg-gray-800 rounded-lg animate-pulse flex items-center justify-center">
-                    <span className="text-gray-400">Loading...</span>
+                  <div className="h-32 bg-gradient-to-br from-gray-800/50 to-gray-700/50 rounded-xl animate-pulse flex items-center justify-center backdrop-blur-sm border border-white/10">
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="w-4 h-4 animate-spin text-[#F7DD0F]" />
+                      <span className="text-gray-300">Loading...</span>
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="h-32 bg-gray-800 rounded-lg flex items-center justify-center p-4">
+                    <div className="h-32 bg-gradient-to-br from-gray-800/50 to-gray-700/50 rounded-xl flex items-center justify-center p-4 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-colors">
                       <img
                         src={logoUrl}
                         alt="Current Logo"
-                        className="max-h-full max-w-full object-contain"
+                        className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
                         onError={(e) => {
                           const target = e.target as HTMLImageElement
                           target.src = '/logo/dopelogo.svg'
                         }}
                       />
                     </div>
-                    <p className="text-sm text-gray-400 break-all">{logoUrl}</p>
+                    <p className="text-sm text-gray-300 break-all bg-white/5 rounded-lg p-2 backdrop-blur-sm">{logoUrl}</p>
                   </div>
                 )}
               </div>
 
               {/* Video Preview */}
-              <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+              <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 p-6">
                 <div className="flex items-center space-x-2 mb-4">
                   <Video className="w-5 h-5 text-[#F7DD0F]" />
-                  <h3 className="text-lg font-semibold">Current Video</h3>
+                  <h3 className="text-lg font-semibold text-white">Current Video</h3>
                 </div>
                 {assetsLoading ? (
-                  <div className="h-32 bg-gray-800 rounded-lg animate-pulse flex items-center justify-center">
-                    <span className="text-gray-400">Loading...</span>
+                  <div className="h-32 bg-gradient-to-br from-gray-800/50 to-gray-700/50 rounded-xl animate-pulse flex items-center justify-center backdrop-blur-sm border border-white/10">
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="w-4 h-4 animate-spin text-[#F7DD0F]" />
+                      <span className="text-gray-300">Loading...</span>
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="h-32 bg-gray-800 rounded-lg flex items-center justify-center p-4">
+                    <div className="h-32 bg-gradient-to-br from-gray-800/50 to-gray-700/50 rounded-xl flex items-center justify-center p-4 backdrop-blur-sm border border-white/10 hover:border-white/20 transition-colors">
                       <video
                         src={videoUrl}
-                        className="max-h-full max-w-full object-contain"
+                        className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
                         muted
                         loop
                         onError={(e) => {
@@ -1209,47 +1191,53 @@ export default function DopeTechAdmin() {
                         }}
                       />
                     </div>
-                    <p className="text-sm text-gray-400 break-all">{videoUrl}</p>
+                    <p className="text-sm text-gray-300 break-all bg-white/5 rounded-lg p-2 backdrop-blur-sm">{videoUrl}</p>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Asset Upload */}
-            <div className="bg-white/5 border border-white/10 rounded-lg p-6">
+            <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 p-6">
               <div className="flex items-center space-x-2 mb-4">
                 <Upload className="w-5 h-5 text-[#F7DD0F]" />
-                <h3 className="text-lg font-semibold">Upload New Assets</h3>
+                <h3 className="text-lg font-semibold text-white">Upload New Assets</h3>
               </div>
               <AssetUploader />
             </div>
 
             {/* Asset List */}
             {assets.length > 0 && (
-              <div className="bg-white/5 border border-white/10 rounded-lg p-6">
-                <h3 className="text-lg font-semibold mb-4">Uploaded Assets</h3>
+              <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 p-6">
+                <h3 className="text-lg font-semibold mb-4 text-white">Uploaded Assets</h3>
                 <div className="space-y-3">
                   {assets.map((asset, index) => (
                     <div
                       key={asset.id || `${asset.name}-${asset.type}-${index}`}
-                      className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg"
+                      className="group/item flex items-center justify-between p-4 bg-gradient-to-r from-white/5 to-white/10 rounded-xl backdrop-blur-sm border border-white/10 hover:border-white/20 transition-all duration-300 hover:bg-white/10"
                     >
                       <div className="flex items-center space-x-3">
                         {asset.type === 'logo' ? (
-                          <ImageIcon className="w-4 h-4 text-blue-400" />
+                          <div className="p-2 bg-blue-500/20 rounded-lg">
+                            <ImageIcon className="w-4 h-4 text-blue-400" />
+                          </div>
                         ) : asset.type === 'video' ? (
-                          <Video className="w-4 h-4 text-green-400" />
+                          <div className="p-2 bg-green-500/20 rounded-lg">
+                            <Video className="w-4 h-4 text-green-400" />
+                          </div>
                         ) : (
-                          <ImageIcon className="w-4 h-4 text-purple-400" />
+                          <div className="p-2 bg-purple-500/20 rounded-lg">
+                            <ImageIcon className="w-4 h-4 text-purple-400" />
+                          </div>
                         )}
                         <div>
                           <p className="text-white font-medium">{asset.name}</p>
-                          <p className="text-xs text-gray-400">{asset.type}</p>
+                          <p className="text-xs text-gray-300 capitalize">{asset.type}</p>
                         </div>
                       </div>
                       <button
                         onClick={() => deleteAsset(asset.name)}
-                        className="p-2 bg-red-500/10 hover:bg-red-500/20 rounded-lg transition-colors text-red-400"
+                        className="p-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg transition-all duration-300 text-red-400 hover:scale-105"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

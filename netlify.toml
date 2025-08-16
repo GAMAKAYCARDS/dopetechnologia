@@ -1,6 +1,6 @@
 [build]
-  command = "npm run build"
-  publish = "out"
+  command = "pnpm build"
+  publish = ".next"
   functions = ".netlify/functions"
 
 [[plugins]]
@@ -123,6 +123,20 @@
   status = 200
   force = true
 
+# Critical redirects for Next.js
+[[redirects]]
+  from = "/_next/static/*"
+  to = "/_next/static/:splat"
+  status = 200
+  force = true
+
+# API routes redirects
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
 # Handle 404s for missing assets gracefully
 [[redirects]]
   from = "/video/footervid.mp4"
@@ -140,30 +154,5 @@
   from = "/payment/paymentQR.svg"
   to = "/placeholder.jpg"
   status = 302
-  force = true
-
-# Critical redirects for static export
-[[redirects]]
-  from = "/_next/static/*"
-  to = "/_next/static/:splat"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/logo/simple-logo.svg"
-  to = "/logo/simple-logo.svg"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/placeholder.jpg"
-  to = "/placeholder.jpg"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/manifest.json"
-  to = "/manifest.json"
-  status = 200
   force = true
 

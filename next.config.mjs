@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: true,
-  // Enable static export for Netlify
-  output: 'export',
-  distDir: 'out',
   eslint: {
     ignoreDuringBuilds: true,
   },

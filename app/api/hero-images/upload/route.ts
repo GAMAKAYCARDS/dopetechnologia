@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
-// Static export compatibility
-export const dynamic = 'force-static'
-export const revalidate = false
-
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
