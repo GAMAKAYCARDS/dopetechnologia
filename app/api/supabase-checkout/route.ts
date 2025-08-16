@@ -51,32 +51,65 @@ export async function POST(request: NextRequest) {
     if (body.receiptFile && body.receiptFileName) {
       try {
         console.log('📤 Uploading receipt to Supabase Storage...')
+        console.log('📄 Receipt file name:', body.receiptFileName)
+        console.log('📄 Receipt file size:', body.receiptFile.length, 'characters')
         
         const fileExt = body.receiptFileName.split('.').pop()
         const fileName = `${body.orderId}_receipt.${fileExt}`
         
+        console.log('📄 Generated file name:', fileName)
+        
         // Convert base64 to buffer
-        const fileBuffer = Buffer.from(body.receiptFile.split(',')[1], 'base64')
+        const base64Data = body.receiptFile.split(',')[1]
+        if (!base64Data) {
+          console.error('❌ Invalid base64 data format')
+          throw new Error('Invalid base64 data format')
+        }
+        
+        const fileBuffer = Buffer.from(base64Data, 'base64')
+        console.log('📄 File buffer size:', fileBuffer.length, 'bytes')
+        
+        // Determine correct content type based on file extension
+        let contentType = 'image/jpeg' // default
+        if (fileExt?.toLowerCase() === 'png') {
+          contentType = 'image/png'
+        } else if (fileExt?.toLowerCase() === 'pdf') {
+          contentType = 'application/pdf'
+        } else if (fileExt?.toLowerCase() === 'jpg' || fileExt?.toLowerCase() === 'jpeg') {
+          contentType = 'image/jpeg'
+        }
+        
+        console.log('📄 Using content type:', contentType)
         
         const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
           .from('receipts')
           .upload(fileName, fileBuffer, {
-            contentType: 'application/octet-stream',
+            contentType: contentType,
             cacheControl: '3600'
           })
 
         if (uploadError) {
           console.error('❌ Error uploading receipt:', uploadError)
-        } else {
-          const { data: urlData } = supabaseAdmin.storage
-            .from('receipts')
-            .getPublicUrl(fileName)
-          receiptUrl = urlData.publicUrl
-          console.log('✅ Receipt uploaded successfully:', receiptUrl)
+          throw uploadError
         }
+
+        console.log('✅ Receipt uploaded successfully:', uploadData)
+        
+        // Get public URL
+        const { data: urlData } = supabaseAdmin.storage
+          .from('receipts')
+          .getPublicUrl(fileName)
+        
+        receiptUrl = urlData.publicUrl
+        console.log('✅ Receipt public URL generated:', receiptUrl)
+        
       } catch (error) {
         console.error('❌ Error processing receipt:', error)
+        // Don't fail the entire order if receipt upload fails
+        console.log('⚠️ Continuing with order creation without receipt URL')
       }
+    } else {
+      console.log('ℹ️ No receipt file provided')
     }
 
     // Create order in Supabase

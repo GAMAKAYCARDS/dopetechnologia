@@ -33,3 +33,8 @@
 [33m984d747[m Fix infinite loading issue and improve product data handling
 [33m58ab97e[m Update site with latest changes and improvements
 [33maaa8359[m Initial commit: DopeTech e-commerce platform with Next.js, Supabase, and modern UI components
+[33m02e19cb[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix hydration errors and optimize mobile product cards - Add ClientOnly component for hydration-safe rendering - Optimize product cards for mobile 2x2 grid layout - Increase text and button sizes for better mobile readability - Add dark tint overlay for improved text legibility - Create hydration-safe utility hooks
+[33maee73a8[m fixes
+[33m956a58e[m feat: Add fluid draggable marquee with enhanced scroll functionality - Remove scroll indicator dots for cleaner UI - Implement ultra-fluid drag scrolling with improved sensitivity - Add momentum scrolling with enhanced physics - Support touch gestures and mouse wheel scrolling - Add comprehensive drag scroll hook and component - Include detailed documentation and CSS enhancements
+[33m9ffdbed[m Update package-lock.json with latest dependencies
+[33me61bb1b[m Enhanced admin panel with glass morphism theme and Netlify deployment fixes

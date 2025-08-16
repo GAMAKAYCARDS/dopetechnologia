@@ -37,6 +37,7 @@ import { supabase } from "@/lib/supabase"
 import { useAssets } from '@/hooks/use-assets'
 import { AssetUploader } from '@/components/asset-uploader'
 import { HeroImageManager } from '@/components/hero-image-manager'
+import { OrdersManager } from '@/components/orders-manager'
 
 interface AdminProduct extends Product {
   isNew?: boolean
@@ -506,6 +507,17 @@ export default function DopeTechAdmin() {
             >
               <ImageIcon className="w-5 h-5" />
               <span>Carousel Editor</span>
+            </button>
+            <button
+              onClick={() => setActiveTab("orders")}
+              className={`flex items-center space-x-3 px-6 py-4 rounded-xl transition-all duration-300 font-semibold focus-ring ${
+                activeTab === "orders"
+                  ? "bg-[#F7DD0F] text-black shadow-lg"
+                  : "text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105"
+              }`}
+            >
+              <ShoppingCart className="w-5 h-5" />
+              <span>Orders & Receipts</span>
             </button>
           </div>
         </div>
@@ -1301,6 +1313,11 @@ export default function DopeTechAdmin() {
               <HeroImageManager />
             </div>
           </div>
+        )}
+
+        {/* Orders & Receipts Tab */}
+        {activeTab === "orders" && (
+          <OrdersManager />
         )}
       </div>
     </div>
