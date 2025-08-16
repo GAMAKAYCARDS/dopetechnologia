@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 
-// Static export compatibility - DISABLED FOR DEVELOPMENT
-// export const dynamic = 'force-static'
-// export const revalidate = false
+// Static export compatibility
+export const dynamic = 'force-static'
+export const revalidate = false
 
 interface CheckoutData {
   orderId: string
