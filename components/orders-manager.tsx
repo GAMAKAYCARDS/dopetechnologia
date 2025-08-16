@@ -10,7 +10,6 @@ import {
   Phone, 
   Mail, 
   MapPin, 
-  DollarSign, 
   Package,
   Search,
   Filter,
@@ -273,7 +272,6 @@ export function OrdersManager() {
                       <span className="text-gray-300">{order.customer_phone}</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <DollarSign className="w-4 h-4 text-[#F7DD0F]" />
                       <span className="text-[#F7DD0F] font-semibold">Rs {order.total_amount}</span>
                     </div>
                   </div>
