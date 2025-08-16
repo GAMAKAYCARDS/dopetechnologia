@@ -97,7 +97,7 @@ export default function OptimizedProductCard({
     >
       {/* Discount Badge */}
       {product.discount > 0 && (
-        <div className="absolute top-3 left-3 z-10 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+        <div className="absolute top-2 sm:top-3 left-2 sm:left-3 z-10 bg-red-500 text-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-xs font-bold">
           -{product.discount}%
         </div>
       )}
@@ -106,11 +106,11 @@ export default function OptimizedProductCard({
       {onWishlist && (
         <button
           onClick={handleWishlist}
-          className="absolute top-3 right-3 z-10 p-2 bg-white/80 dark:bg-gray-800/80 rounded-full backdrop-blur-sm transition-all duration-200 hover:bg-white dark:hover:bg-gray-700"
+          className="absolute top-2 sm:top-3 right-2 sm:right-3 z-10 p-1.5 sm:p-2 bg-white/80 dark:bg-gray-800/80 rounded-full backdrop-blur-sm transition-all duration-200 hover:bg-white dark:hover:bg-gray-700"
           aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
         >
           <Heart 
-            className={`w-4 h-4 transition-colors duration-200 ${
+            className={`w-3 h-3 sm:w-4 sm:h-4 transition-colors duration-200 ${
               isWishlisted 
                 ? "fill-red-500 text-red-500" 
                 : "text-gray-600 dark:text-gray-400 hover:text-red-500"
@@ -147,7 +147,7 @@ export default function OptimizedProductCard({
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-3">
+      <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
         {/* Category (hidden on mobile) */}
         <div className="hidden sm:flex items-center justify-center">
           <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
@@ -156,7 +156,7 @@ export default function OptimizedProductCard({
         </div>
 
         {/* Product Name */}
-        <h3 className="font-semibold text-gray-900 dark:text-white text-sm line-clamp-2 text-center">
+        <h3 className="font-semibold text-gray-900 dark:text-white text-xs sm:text-sm line-clamp-2 text-center">
           {product.name}
         </h3>
         {/* Description (hidden on mobile) */}
@@ -166,9 +166,9 @@ export default function OptimizedProductCard({
 
         {/* Price + Discount (mobile-friendly) */}
         <div>
-          <div className="flex items-start justify-center space-x-4">
+          <div className="flex items-start justify-center space-x-2 sm:space-x-4">
             <div className="flex flex-col leading-tight text-center">
-              <span className="text-lg font-bold text-[#F7DD0F]">
+              <span className="text-sm sm:text-lg font-bold text-[#F7DD0F]">
                 Rs {product.price.toLocaleString()}
               </span>
               {product.original_price > product.price && (
@@ -177,7 +177,7 @@ export default function OptimizedProductCard({
                 </span>
               )}
             </div>
-            <div className={`px-2 py-1 rounded-full text-[10px] font-medium ${
+            <div className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] font-medium ${
               product.in_stock 
                 ? "bg-green-500/20 text-green-400 border border-green-500/30" 
                 : "bg-red-500/20 text-red-400 border border-red-500/30"
@@ -203,10 +203,10 @@ export default function OptimizedProductCard({
         {/* Add to Cart Button */}
         <Button
           onClick={handleAddToCart}
-          className="w-full bg-[#F7DD0F] text-black hover:bg-[#F7DD0F]/90 transition-all duration-200 btn-primary"
+          className="w-full bg-[#F7DD0F] text-black hover:bg-[#F7DD0F]/90 transition-all duration-200 btn-primary text-xs sm:text-sm"
           disabled={!product.in_stock}
         >
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
           {product.in_stock ? "Add to Cart" : "Out of Stock"}
         </Button>
       </div>

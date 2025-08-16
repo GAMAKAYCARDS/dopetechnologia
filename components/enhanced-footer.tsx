@@ -74,23 +74,23 @@ export function EnhancedFooter() {
   return (
     <footer className="bg-gray-900 text-white">
       {/* Features Section */}
-      <section className="bg-gray-800 py-8">
+      <section className="bg-gray-800 py-6 sm:py-8">
         <div className="container-responsive">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="flex flex-col items-center text-center space-y-3"
+                className="flex flex-col items-center text-center space-y-2 sm:space-y-3"
               >
-                <div className="p-3 bg-primary/10 rounded-full">
-                  <feature.icon className="w-6 h-6 text-primary" />
+                <div className="p-2 sm:p-3 bg-primary/10 rounded-full">
+                  <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-sm lg:text-base">{feature.title}</h3>
-                  <p className="text-xs lg:text-sm text-gray-400">{feature.description}</p>
+                  <h3 className="font-semibold text-xs sm:text-sm md:text-base">{feature.title}</h3>
+                  <p className="text-xs sm:text-sm text-gray-400">{feature.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -99,15 +99,15 @@ export function EnhancedFooter() {
       </section>
 
       {/* Main Footer Content */}
-      <div className="container-responsive py-12 lg:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+      <div className="container-responsive py-8 sm:py-10 md:py-12 lg:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-12">
           
           {/* Company Info */}
           <div className="lg:col-span-1">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              className="space-y-4"
+              className="space-y-3 sm:space-y-4"
             >
               {/* Logo */}
               <div className="flex items-center space-x-2">
@@ -115,31 +115,31 @@ export function EnhancedFooter() {
                   <img 
                     src={logoUrl} 
                     alt="DopeTech Nepal" 
-                    className="h-8 w-auto"
+                    className="h-6 w-auto sm:h-8 sm:w-auto"
                   />
                 ) : (
-                  <div className="h-8 w-32 bg-primary rounded-lg animate-pulse" />
+                  <div className="h-6 w-24 sm:h-8 sm:w-32 bg-primary rounded-lg animate-pulse" />
                 )}
-                <span className="text-xl font-bold">DopeTech</span>
+                <span className="text-lg sm:text-xl font-bold">DopeTech</span>
               </div>
               
-              <p className="text-gray-400 text-sm leading-relaxed">
+              <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
                 Premium tech gear from Nepal. Your setup, perfected with the finest mechanical keyboards, 
                 gaming mice, and audio equipment.
               </p>
               
               {/* Contact Info */}
-              <div className="space-y-2">
-                <div className="flex items-center space-x-3 text-sm text-gray-400">
-                  <Phone className="w-4 h-4 text-primary" />
+              <div className="space-y-1.5 sm:space-y-2">
+                <div className="flex items-center space-x-2 sm:space-x-3 text-xs sm:text-sm text-gray-400">
+                  <Phone className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
                   <span>+977 1234567890</span>
                 </div>
-                <div className="flex items-center space-x-3 text-sm text-gray-400">
-                  <Mail className="w-4 h-4 text-primary" />
+                <div className="flex items-center space-x-2 sm:space-x-3 text-xs sm:text-sm text-gray-400">
+                  <Mail className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
                   <span>info@dopetech.com</span>
                 </div>
-                <div className="flex items-center space-x-3 text-sm text-gray-400">
-                  <MapPin className="w-4 h-4 text-primary" />
+                <div className="flex items-center space-x-2 sm:space-x-3 text-xs sm:text-sm text-gray-400">
+                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
                   <span>Kathmandu, Nepal</span>
                 </div>
               </div>
@@ -151,16 +151,16 @@ export function EnhancedFooter() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="space-y-4"
+            className="space-y-3 sm:space-y-4"
           >
-            <h3 className="text-lg font-semibold text-white">Products</h3>
-            <ul className="space-y-2">
+            <h3 className="text-base sm:text-lg font-semibold text-white">Products</h3>
+            <ul className="space-y-1.5 sm:space-y-2">
               {footerLinks.products.map((link) => (
                 <li key={link.name}>
                   <motion.a
                     href={link.href}
                     whileHover={{ x: 5 }}
-                    className="text-sm text-gray-400 hover:text-primary transition-colors duration-200"
+                    className="text-xs sm:text-sm text-gray-400 hover:text-primary transition-colors duration-200"
                   >
                     {link.name}
                   </motion.a>
@@ -174,16 +174,16 @@ export function EnhancedFooter() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="space-y-4"
+            className="space-y-3 sm:space-y-4"
           >
-            <h3 className="text-lg font-semibold text-white">Support</h3>
-            <ul className="space-y-2">
+            <h3 className="text-base sm:text-lg font-semibold text-white">Support</h3>
+            <ul className="space-y-1.5 sm:space-y-2">
               {footerLinks.support.map((link) => (
                 <li key={link.name}>
                   <motion.a
                     href={link.href}
                     whileHover={{ x: 5 }}
-                    className="text-sm text-gray-400 hover:text-primary transition-colors duration-200"
+                    className="text-xs sm:text-sm text-gray-400 hover:text-primary transition-colors duration-200"
                   >
                     {link.name}
                   </motion.a>
@@ -197,16 +197,16 @@ export function EnhancedFooter() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="space-y-4"
+            className="space-y-3 sm:space-y-4"
           >
-            <h3 className="text-lg font-semibold text-white">Company</h3>
-            <ul className="space-y-2">
+            <h3 className="text-base sm:text-lg font-semibold text-white">Company</h3>
+            <ul className="space-y-1.5 sm:space-y-2">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
                   <motion.a
                     href={link.href}
                     whileHover={{ x: 5 }}
-                    className="text-sm text-gray-400 hover:text-primary transition-colors duration-200"
+                    className="text-xs sm:text-sm text-gray-400 hover:text-primary transition-colors duration-200"
                   >
                     {link.name}
                   </motion.a>
@@ -221,23 +221,23 @@ export function EnhancedFooter() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="mt-12 pt-8 border-t border-gray-800"
+          className="mt-8 sm:mt-10 md:mt-12 pt-6 sm:pt-8 border-t border-gray-800"
         >
-          <div className="text-center space-y-4">
-            <h3 className="text-xl font-semibold text-white">Stay Updated</h3>
-            <p className="text-gray-400 text-sm max-w-md mx-auto">
+          <div className="text-center space-y-3 sm:space-y-4">
+            <h3 className="text-lg sm:text-xl font-semibold text-white">Stay Updated</h3>
+            <p className="text-gray-400 text-xs sm:text-sm max-w-md mx-auto">
               Subscribe to our newsletter for the latest products, exclusive offers, and tech tips.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 max-w-md mx-auto">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-gray-400"
+                className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-white placeholder-gray-400 text-sm sm:text-base"
               />
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="btn-primary whitespace-nowrap"
+                className="btn-primary whitespace-nowrap text-sm sm:text-base"
               >
                 Subscribe
               </motion.button>
@@ -250,20 +250,20 @@ export function EnhancedFooter() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="mt-8 pt-8 border-t border-gray-800"
+          className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-gray-800"
         >
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex space-x-4">
+            <div className="flex space-x-3 sm:space-x-4">
               {socialLinks.map((social) => (
                 <motion.a
                   key={social.name}
                   href={social.href}
                   whileHover={{ scale: 1.1, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className={`p-2 bg-gray-800 rounded-lg text-gray-400 transition-colors duration-200 ${social.color}`}
+                  className={`p-1.5 sm:p-2 bg-gray-800 rounded-lg text-gray-400 transition-colors duration-200 ${social.color}`}
                   aria-label={social.name}
                 >
-                  <social.icon className="w-5 h-5" />
+                  <social.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                 </motion.a>
               ))}
             </div>
@@ -273,10 +273,10 @@ export function EnhancedFooter() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={scrollToTop}
-              className="flex items-center space-x-2 px-4 py-2 bg-primary text-secondary rounded-lg hover:bg-primary-dark transition-colors duration-200"
+              className="flex items-center space-x-1.5 sm:space-x-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-primary text-secondary rounded-lg hover:bg-primary-dark transition-colors duration-200"
             >
-              <ArrowUp className="w-4 h-4" />
-              <span className="text-sm font-medium">Back to Top</span>
+              <ArrowUp className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="text-xs sm:text-sm font-medium">Back to Top</span>
             </motion.button>
           </div>
         </motion.div>
@@ -284,17 +284,17 @@ export function EnhancedFooter() {
 
       {/* Bottom Bar */}
       <div className="border-t border-gray-800 bg-gray-950">
-        <div className="container-responsive py-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-400">
-            <div className="flex items-center space-x-2">
+        <div className="container-responsive py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-xs sm:text-sm text-gray-400">
+            <div className="flex items-center space-x-1 sm:space-x-2">
               <span>&copy; {currentYear} DopeTech Nepal. All rights reserved.</span>
               <span className="hidden sm:inline">•</span>
               <span className="hidden sm:inline">Made with</span>
-              <Heart className="w-4 h-4 text-red-500 hidden sm:inline" />
+              <Heart className="w-3 h-3 sm:w-4 sm:h-4 text-red-500 hidden sm:inline" />
               <span className="hidden sm:inline">in Nepal</span>
             </div>
             
-            <div className="flex items-center space-x-4 text-xs">
+            <div className="flex items-center space-x-3 sm:space-x-4 text-xs">
               <a href="#privacy" className="hover:text-primary transition-colors duration-200">
                 Privacy Policy
               </a>
