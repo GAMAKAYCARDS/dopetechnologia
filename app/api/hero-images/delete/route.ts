@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
+// Static export compatibility - DISABLED FOR DEVELOPMENT
+// export const dynamic = 'force-static'
+// export const revalidate = false
+
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

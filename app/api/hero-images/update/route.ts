@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
+// Static export compatibility - DISABLED FOR DEVELOPMENT
+// export const dynamic = 'force-static'
+// export const revalidate = false
+
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()

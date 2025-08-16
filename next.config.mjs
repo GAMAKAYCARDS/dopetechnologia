@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: true,
+  // Enable static export for Netlify - DISABLED FOR DEVELOPMENT
+  // output: 'export',
+  // distDir: 'out',
   eslint: {
     ignoreDuringBuilds: true,
   },

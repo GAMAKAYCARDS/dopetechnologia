@@ -1,6 +1,6 @@
 [build]
-  command = "pnpm build"
-  publish = ".next"
+  command = "npm run build"
+  publish = "out"
   functions = ".netlify/functions"
 
 [[plugins]]
@@ -140,5 +140,30 @@
   from = "/payment/paymentQR.svg"
   to = "/placeholder.jpg"
   status = 302
+  force = true
+
+# Critical redirects for static export
+[[redirects]]
+  from = "/_next/static/*"
+  to = "/_next/static/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/logo/simple-logo.svg"
+  to = "/logo/simple-logo.svg"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/placeholder.jpg"
+  to = "/placeholder.jpg"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/manifest.json"
+  to = "/manifest.json"
+  status = 200
   force = true
 
